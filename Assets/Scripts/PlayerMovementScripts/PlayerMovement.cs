@@ -64,6 +64,10 @@ public class PlayerMovement : MonoBehaviour
         Vector2 input = moveAction.ReadValue<Vector2>();
         float currentSpeed = IsWallRunning ? wallRunSpeed : (sprintAction.IsPressed() ? sprintSpeed : walkSpeed);
         animator.SetFloat("Speed", input.magnitude * currentSpeed);
+
+        // ADD THESE TWO LINES
+        animator.SetBool("isWallRunning", IsWallRunning);
+        animator.SetInteger("WallSide", WallSide);
     }
 
     void HandleMovement()
