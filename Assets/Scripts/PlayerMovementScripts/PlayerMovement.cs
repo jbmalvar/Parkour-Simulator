@@ -111,29 +111,4 @@ public class PlayerMovement : MonoBehaviour
             IsWallRunning = false;
         }
     }
-
-    void OnAnimatorIK(int layerIndex)
-{
-    if (animator == null) return;
-
-    if (IsWallRunning && WallSide == 1) // Only for right wall
-    {
-        // 1. Set the weight (0 = normal animation, 1 = fully stuck to wall)
-        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
-        animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
-
-        // 2. Define where the hand should go relative to the player
-        // This puts it slightly forward and to the right
-        Vector3 wallHandPos = transform.position + (transform.right * 0.5f) + (transform.forward * 0.5f) + (transform.up * 1.0f);
-        
-        animator.SetIKPosition(AvatarIKGoal.RightHand, wallHandPos);
-        // You can also set a specific rotation so the palm faces the wall
-        animator.SetIKRotation(AvatarIKGoal.RightHand, transform.rotation * Quaternion.Euler(0, -90, 0));
-    }
-    else
-    {
-        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0f);
-        animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 0f);
-    }
-}
 }
