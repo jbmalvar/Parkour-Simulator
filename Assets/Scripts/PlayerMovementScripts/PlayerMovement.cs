@@ -4,7 +4,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement")]
+    private Animator animator;
+    private CharacterController controller;
+
+    [Header("Movement Settings")]
     public float walkSpeed = 5f;
     public float sprintSpeed = 8f;
     public float jumpHeight = 1.5f;
@@ -16,8 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public float wallDetectionRange = 0.7f;
     public LayerMask wallLayer;
 
-    private CharacterController controller;
-    private Vector3 velocity;
+    private Vector3 playerVelocity; // For gravity and jumps
     private bool isGrounded;
     private bool isWallRunning;
 
@@ -28,8 +30,8 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        animator = GetComponentInChildren<Animator>();
         
-        // Hook into Project-Wide Input Actions
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
         sprintAction = InputSystem.actions.FindAction("Sprint");
@@ -38,32 +40,33 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         isGrounded = controller.isGrounded;
-        if (isGrounded && velocity.y < 0) velocity.y = -2f;
+        if (isGrounded && playerVelocity.y < 0) 
+            playerVelocity.y = -2f;
 
-        HandleMovement();
-        HandleWallRun();
-        
-        // Final Movement
-        controller.Move(velocity * Time.deltaTime);
-    }
-
-    void HandleMovement()
-    {
+        // 1. Get Input and calculate Horizontal Move
         Vector2 input = moveAction.ReadValue<Vector2>();
-        Vector3 move = transform.right * input.x + transform.forward * input.y;
-        
+        Vector3 moveDirection = transform.right * input.x + transform.forward * input.y;
         float currentSpeed = sprintAction.IsPressed() ? sprintSpeed : walkSpeed;
-        controller.Move(move * currentSpeed * Time.deltaTime);
-
-        // Standard Jump
+        
+        // 2. Handle Jumping and Gravity
         if (jumpAction.WasPressedThisFrame() && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
-        // Apply Gravity
+        HandleWallRun();
+
         float currentGravity = isWallRunning ? wallRunGravity : gravity;
-        velocity.y += currentGravity * Time.deltaTime;
+        playerVelocity.y += currentGravity * Time.deltaTime;
+
+        // 3. COMBINE and Move ONCE (Critical for velocity detection)
+        Vector3 finalMovement = (moveDirection * currentSpeed) + playerVelocity;
+        controller.Move(finalMovement * Time.deltaTime);
+
+        // 4. Update Animator based on actual displacement
+        // We use the input magnitude here to ensure animations play even if stuck against a wall
+        float moveMagnitude = input.magnitude * currentSpeed;
+        animator.SetFloat("Speed", moveMagnitude);
     }
 
     void HandleWallRun()
@@ -80,13 +83,13 @@ public class PlayerMovement : MonoBehaviour
         if (wallLeft || wallRight)
         {
             isWallRunning = true;
-            velocity.y = Mathf.Max(velocity.y, wallRunGravity); // Maintain height longer
+            playerVelocity.y = Mathf.Max(playerVelocity.y, wallRunGravity);
 
-            // Jump off wall
             if (jumpAction.WasPressedThisFrame())
             {
                 Vector3 wallNormal = wallLeft ? leftHit.normal : rightHit.normal;
-                velocity = (wallNormal + Vector3.up).normalized * wallRunJumpForce;
+                // Add wall kick force to playerVelocity
+                playerVelocity = (wallNormal + Vector3.up).normalized * wallRunJumpForce;
             }
         }
         else
