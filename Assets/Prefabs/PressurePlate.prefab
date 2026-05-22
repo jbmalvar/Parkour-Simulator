@@ -113,4 +113,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5765f8443d0364bf69e0ba01c824debb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PressurePlate
-  door: {fileID: 0}
+  door: {fileID: 4463109393569584097, guid: 5482adcc210894c8dbbcce1b2c621099, type: 3}
