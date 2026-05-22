@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     public float wallDetectionRange = 0.8f;
     public LayerMask wallLayer;
 
-    
+
     [Header("Slide Settings")]
     public float slideSpeed = 12f;
     public float slideDuration = 0.8f;
@@ -29,8 +29,14 @@ public class PlayerMovement : MonoBehaviour
     private float originalHeight;
     private Vector3 originalCenter;
     private bool isSliding = false;
-
     private InputAction crouchAction;
+
+    [Header("Roll Settings")]
+    public float rollSpeed = 10f;
+    public float rollDuration = 1.0f;
+    private bool isRolling = false;
+    public bool IsRolling => isRolling;
+    private bool wasGrounded; // To detect the moment of landing
 
     private Vector3 playerVelocity;
     private bool isGrounded;
@@ -58,7 +64,14 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        wasGrounded = isGrounded;
         isGrounded = controller.isGrounded;
+
+        // Detect Landing Roll: Now checks !isSliding to prevent stacking
+        if (!wasGrounded && isGrounded && crouchAction.IsPressed() && !isRolling && !isSliding)
+        {
+            StartCoroutine(PerformRoll());
+        }
 
         if (isGrounded)
         {
@@ -67,43 +80,34 @@ public class PlayerMovement : MonoBehaviour
             playerVelocity.z = Mathf.Lerp(playerVelocity.z, 0, Time.deltaTime * 10f);
         }
 
-        // TRIGGER SLIDE: Grounded + Sprinting + Crouch button pressed
-        if (isGrounded && sprintAction.IsPressed() && crouchAction.WasPressedThisFrame() && !isSliding)
+        // Trigger Slide: Added safety
+        if (isGrounded && sprintAction.IsPressed() && crouchAction.WasPressedThisFrame() && !isSliding && !isRolling)
         {
             StartCoroutine(PerformSlide());
         }
 
-        // Only handle normal movement and wall running if NOT sliding
-        if (!isSliding)
+        // Only move normally if NOT sliding or rolling
+        if (!isSliding && !isRolling)
         {
             HandleMovement();
             HandleWallRun();
-        }
-        else
-        {
-            // Allow jumping out of a slide (Slide Jump)
-            if (jumpAction.WasPressedThisFrame() && isGrounded)
-            {
-                playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-                // Sliding is automatically turned off when the coroutine ends or by jumping
-            }
+            
+            // Apply Gravity only during normal movement (Coroutines handle their own gravity)
+            Vector3 gravityVector = new Vector3(0, (IsWallRunning ? wallRunGravity : gravity), 0);
+            playerVelocity += gravityVector * Time.deltaTime;
+            controller.Move(playerVelocity * Time.deltaTime);
         }
 
-        // Final Movement (Applies Gravity and Jump forces)
-        Vector3 gravityVector = new Vector3(0, (IsWallRunning ? wallRunGravity : gravity), 0);
-        playerVelocity += gravityVector * Time.deltaTime;
-        controller.Move(playerVelocity * Time.deltaTime);
-
-        // Update Animation Parameters
+        // Update Animator
         Vector2 input = moveAction.ReadValue<Vector2>();
         float currentSpeed = IsWallRunning ? wallRunSpeed : (sprintAction.IsPressed() ? sprintSpeed : walkSpeed);
-        
-        // If sliding, tell the animator to use slide speed, otherwise use normal speed
-        animator.SetFloat("Speed", isSliding ? slideSpeed : input.magnitude * currentSpeed);
+        animator.SetFloat("Speed", (isSliding || isRolling) ? rollSpeed : input.magnitude * currentSpeed);
         animator.SetBool("isSliding", isSliding);
+        animator.SetBool("isRolling", isRolling);
         animator.SetBool("isWallRunning", IsWallRunning);
         animator.SetInteger("WallSide", WallSide);
     }
+
     void HandleMovement()
     {
         Vector2 input = moveAction.ReadValue<Vector2>();
@@ -150,35 +154,73 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // 2. Refined Slide Coroutine
     private System.Collections.IEnumerator PerformSlide()
     {
+        // If we were already doing something, stop it
+        isRolling = false; 
         isSliding = true;
-        
-        // Shrink the controller to slide under obstacles
+        playerVelocity = Vector3.zero;
+
         controller.height = slideHeight;
-        controller.center = new Vector3(0, slideHeight / 2f, 0);
+        controller.center = new Vector3(0, originalCenter.y - (originalHeight / 2f) + (slideHeight / 2f), 0);
 
         float timer = 0f;
-        Vector3 slideDirection = transform.forward; // Slide in the direction the player is facing
+        Vector3 slideDirection = transform.forward;
 
         while (timer < slideDuration)
         {
-            // Move the player forward at slide speed
+            // Move horizontally
             controller.Move(slideDirection * slideSpeed * Time.deltaTime);
             
-            // Optional: Apply some gravity while sliding if not grounded
+            // Apply a small amount of gravity manually so we don't float off ledges
             if (!controller.isGrounded)
             {
-                controller.Move(Vector3.up * gravity * Time.deltaTime);
+                playerVelocity.y += gravity * Time.deltaTime;
+                controller.Move(new Vector3(0, playerVelocity.y, 0) * Time.deltaTime);
+            }
+            else
+            {
+                playerVelocity.y = -2f; // Keep stuck to ground
             }
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        // Reset controller dimensions
+        // Reset
         controller.height = originalHeight;
         controller.center = originalCenter;
         isSliding = false;
+        playerVelocity = Vector3.zero; // Clear any built-up gravity
+    }
+
+    // 3. Refined Roll Coroutine
+    private System.Collections.IEnumerator PerformRoll()
+    {
+        isSliding = false;
+        isRolling = true;
+        playerVelocity = Vector3.zero;
+
+        float timer = 0f;
+        Vector3 rollDirection = transform.forward;
+
+        while (timer < rollDuration)
+        {
+            controller.Move(rollDirection * rollSpeed * Time.deltaTime);
+            
+            // Constant ground check during roll
+            if (!controller.isGrounded)
+            {
+                playerVelocity.y += gravity * Time.deltaTime;
+                controller.Move(new Vector3(0, playerVelocity.y, 0) * Time.deltaTime);
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        isRolling = false;
+        playerVelocity = Vector3.zero;
     }
 }
