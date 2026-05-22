@@ -21,6 +21,17 @@ public class PlayerMovement : MonoBehaviour
     public float wallDetectionRange = 0.8f;
     public LayerMask wallLayer;
 
+    
+    [Header("Slide Settings")]
+    public float slideSpeed = 12f;
+    public float slideDuration = 0.8f;
+    public float slideHeight = 1f; 
+    private float originalHeight;
+    private Vector3 originalCenter;
+    private bool isSliding = false;
+
+    private InputAction crouchAction;
+
     private Vector3 playerVelocity;
     private bool isGrounded;
     
@@ -39,6 +50,10 @@ public class PlayerMovement : MonoBehaviour
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
         sprintAction = InputSystem.actions.FindAction("Sprint");
+        crouchAction = InputSystem.actions.FindAction("Crouch");
+
+        originalHeight = controller.height;
+        originalCenter = controller.center;
     }
 
     void Update()
@@ -52,24 +67,43 @@ public class PlayerMovement : MonoBehaviour
             playerVelocity.z = Mathf.Lerp(playerVelocity.z, 0, Time.deltaTime * 10f);
         }
 
-        HandleMovement();
-        HandleWallRun();
+        // TRIGGER SLIDE: Grounded + Sprinting + Crouch button pressed
+        if (isGrounded && sprintAction.IsPressed() && crouchAction.WasPressedThisFrame() && !isSliding)
+        {
+            StartCoroutine(PerformSlide());
+        }
 
-        // Final Movement
+        // Only handle normal movement and wall running if NOT sliding
+        if (!isSliding)
+        {
+            HandleMovement();
+            HandleWallRun();
+        }
+        else
+        {
+            // Allow jumping out of a slide (Slide Jump)
+            if (jumpAction.WasPressedThisFrame() && isGrounded)
+            {
+                playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                // Sliding is automatically turned off when the coroutine ends or by jumping
+            }
+        }
+
+        // Final Movement (Applies Gravity and Jump forces)
         Vector3 gravityVector = new Vector3(0, (IsWallRunning ? wallRunGravity : gravity), 0);
         playerVelocity += gravityVector * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
 
-        // --- ADD THIS LINE TO FIX ANIMATIONS ---
+        // Update Animation Parameters
         Vector2 input = moveAction.ReadValue<Vector2>();
         float currentSpeed = IsWallRunning ? wallRunSpeed : (sprintAction.IsPressed() ? sprintSpeed : walkSpeed);
-        animator.SetFloat("Speed", input.magnitude * currentSpeed);
-
-        // ADD THESE TWO LINES
+        
+        // If sliding, tell the animator to use slide speed, otherwise use normal speed
+        animator.SetFloat("Speed", isSliding ? slideSpeed : input.magnitude * currentSpeed);
+        animator.SetBool("isSliding", isSliding);
         animator.SetBool("isWallRunning", IsWallRunning);
         animator.SetInteger("WallSide", WallSide);
     }
-
     void HandleMovement()
     {
         Vector2 input = moveAction.ReadValue<Vector2>();
@@ -114,5 +148,37 @@ public class PlayerMovement : MonoBehaviour
         {
             IsWallRunning = false;
         }
+    }
+
+    private System.Collections.IEnumerator PerformSlide()
+    {
+        isSliding = true;
+        
+        // Shrink the controller to slide under obstacles
+        controller.height = slideHeight;
+        controller.center = new Vector3(0, slideHeight / 2f, 0);
+
+        float timer = 0f;
+        Vector3 slideDirection = transform.forward; // Slide in the direction the player is facing
+
+        while (timer < slideDuration)
+        {
+            // Move the player forward at slide speed
+            controller.Move(slideDirection * slideSpeed * Time.deltaTime);
+            
+            // Optional: Apply some gravity while sliding if not grounded
+            if (!controller.isGrounded)
+            {
+                controller.Move(Vector3.up * gravity * Time.deltaTime);
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // Reset controller dimensions
+        controller.height = originalHeight;
+        controller.center = originalCenter;
+        isSliding = false;
     }
 }
