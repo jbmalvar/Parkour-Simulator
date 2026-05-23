@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private Animator animator;
     private CharacterController controller;
+    private float fallVelocity;
 
     [Header("Movement Settings")]
     public float walkSpeed = 5f;
@@ -67,17 +68,19 @@ public class PlayerMovement : MonoBehaviour
         wasGrounded = isGrounded;
         isGrounded = controller.isGrounded;
 
-        // Detect Landing Roll: Now checks !isSliding to prevent stacking
-        if (!wasGrounded && isGrounded && crouchAction.IsPressed() && !isRolling && !isSliding)
+        if (!isGrounded) 
         {
-            StartCoroutine(PerformRoll());
+            fallVelocity = playerVelocity.y;
         }
 
-        if (isGrounded)
+        // 2. Modified Landing Roll: Only trigger if falling fast enough (e.g., < -5f)
+        if (!wasGrounded && isGrounded)
         {
-            if (playerVelocity.y < 0) playerVelocity.y = -2f;
-            playerVelocity.x = Mathf.Lerp(playerVelocity.x, 0, Time.deltaTime * 10f);
-            playerVelocity.z = Mathf.Lerp(playerVelocity.z, 0, Time.deltaTime * 10f);
+            if (crouchAction.IsPressed() && fallVelocity < -5f && !isRolling && !isSliding)
+            {
+                StartCoroutine(PerformRoll());
+            }
+            fallVelocity = 0; // Reset after landing
         }
 
         // Trigger Slide: Added safety
@@ -202,24 +205,37 @@ public class PlayerMovement : MonoBehaviour
         isRolling = true;
         playerVelocity = Vector3.zero;
 
+        // Shrink the collider so the physics matches the rolling ball animation
+        controller.height = slideHeight; 
+        controller.center = new Vector3(0, originalCenter.y - (originalHeight / 2f) + (slideHeight / 2f), 0);
+
         float timer = 0f;
         Vector3 rollDirection = transform.forward;
 
         while (timer < rollDuration)
         {
+            // Move forward
             controller.Move(rollDirection * rollSpeed * Time.deltaTime);
             
-            // Constant ground check during roll
+            // Force the player DOWN to prevent "lifting" or floating
             if (!controller.isGrounded)
             {
                 playerVelocity.y += gravity * Time.deltaTime;
-                controller.Move(new Vector3(0, playerVelocity.y, 0) * Time.deltaTime);
             }
+            else
+            {
+                playerVelocity.y = -2f; // Snaps you to the floor
+            }
+            controller.Move(new Vector3(0, playerVelocity.y, 0) * Time.deltaTime);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
+        // Reset the collider height
+        controller.height = originalHeight;
+        controller.center = originalCenter;
+        
         isRolling = false;
         playerVelocity = Vector3.zero;
     }

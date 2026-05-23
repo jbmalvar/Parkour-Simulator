@@ -45,48 +45,44 @@ public class ParkourCamera : MonoBehaviour
     {
         if (lookAction == null || playerBody == null || targetHeadBone == null) return;
 
-        // 1. Get Mouse Input
+        // 1. Standard Mouse Look Logic...
         Vector2 lookInput = lookAction.ReadValue<Vector2>();
-        float mouseX = lookInput.x * mouseSensitivity;
-        float mouseY = lookInput.y * mouseSensitivity;
-
-        // 2. Calculate Rotations
-        yRotation += mouseX;
-        xRotation -= mouseY;
+        yRotation += lookInput.x * mouseSensitivity;
+        xRotation -= lookInput.y * mouseSensitivity;
         xRotation = Mathf.Clamp(xRotation, -maxLookUp, maxLookDown);
-
-        // 3. Rotate the Player Body (Horizontal only)
         playerBody.rotation = Quaternion.Euler(0f, yRotation, 0f);
 
-        // 4. Calculate Wall Run Tilt
-        float targetTilt = 0;
-        if (movementScript != null && movementScript.IsWallRunning)
-        {
-            targetTilt = movementScript.WallSide == 1 ? tiltAmount : -tiltAmount;
-        }
-        currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * tiltSpeed);
+        // 2. Position the Camera on the Head Bone
+        // We no longer need to scale bones to zero! 
+        // The Near Clip Plane of the BodyCamera handles visibility.
+        transform.position = targetHeadBone.position;
 
         if (movementScript != null && movementScript.IsRolling)
         {
-            // Hide ONLY head and neck to keep the camera height stable
-            if (targetHeadBone != null) targetHeadBone.localScale = Vector3.zero;
-            if (targetNeckBone != null) targetNeckBone.localScale = Vector3.zero;
+            // Professional "Damped" Roll Camera:
+            // 1. Get the raw head position
+            Vector3 headPos = targetHeadBone.position;
+            
+            // 2. Lock the Y position to the player's standing eye-level 
+            // This stops the camera from following the animation's "arc"
+            float standingEyeHeight = playerBody.position.y + 1.5f; // Adjust 1.5 to your eye level
+            
+            // 3. Smoothly transition to the roll height so it doesn't "snap"
+            float currentY = Mathf.Lerp(transform.position.y, standingEyeHeight, Time.deltaTime * 10f);
+            
+            transform.position = new Vector3(headPos.x, currentY, headPos.z);
 
-            // Use the bone's position (this will be correct as long as its PARENTS are scale 1)
-            transform.position = targetHeadBone.position; 
-            transform.rotation = targetHeadBone.rotation * Quaternion.Euler(xRotation, 0f, 0f);
+            // 4. Keep the rotation follow (this is what makes the roll feel immersive)
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetHeadBone.rotation * Quaternion.Euler(xRotation, 0f, 0f), Time.deltaTime * 15f);
         }
         else
         {
-            // Restore scale
-            if (targetHeadBone != null) targetHeadBone.localScale = Vector3.one;
-            if (targetNeckBone != null) targetNeckBone.localScale = Vector3.one;
-
-            transform.position = targetHeadBone.position + 
-                                playerBody.right * headOffset.x + 
-                                playerBody.up * headOffset.y + 
-                                playerBody.forward * headOffset.z;
-
+            // Standard walk/run tilt logic
+            float targetTilt = 0;
+            if (movementScript.IsWallRunning)
+                targetTilt = movementScript.WallSide == 1 ? tiltAmount : -tiltAmount;
+            
+            currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * tiltSpeed);
             transform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
         }
     }
