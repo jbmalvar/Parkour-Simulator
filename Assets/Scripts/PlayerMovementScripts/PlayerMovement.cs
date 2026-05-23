@@ -11,17 +11,23 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Settings")]
     public float walkSpeed = 5f;
     public float sprintSpeed = 8f;
-    public float wallRunSpeed = 10f; // Mirror's Edge speed boost
+    public float wallRunSpeed = 10f; 
     public float jumpHeight = 1.5f;
     public float gravity = -19.62f;
 
     [Header("Wall Running")]
-    public float wallRunGravity = -1f; // Lighter gravity for "sticky" feel
+    public float wallRunGravity = -1f; 
     public float wallJumpUpForce = 5f;
     public float wallJumpSideForce = 4f;
     public float wallDetectionRange = 0.8f;
     public LayerMask wallLayer;
 
+    [Header("Wall Climb Settings")]
+    public float climbSpeed = 5f;
+    public float maxClimbTime = 0.8f; 
+    public float climbCheckDistance = 1f;
+    private bool isClimbing = false;
+    private bool hasClimbedThisJump = false; // NEW: Prevents infinite climbing
 
     [Header("Slide Settings")]
     public float slideSpeed = 12f;
@@ -37,14 +43,22 @@ public class PlayerMovement : MonoBehaviour
     public float rollDuration = 1.0f;
     private bool isRolling = false;
     public bool IsRolling => isRolling;
-    private bool wasGrounded; // To detect the moment of landing
+    private bool wasGrounded;
+
+    [Header("Vault Settings")]
+    public float vaultMaxDistance = 1.5f;
+    public float vaultSpeed = 10f;
+    public LayerMask vaultLayer; 
+    private bool isVaulting = false;
+    private Vector3 vaultTargetPosition; 
 
     private Vector3 playerVelocity;
     private bool isGrounded;
     
-    // Properties for the Camera Script
+    private Coroutine currentActionRoutine;
+
     public bool IsWallRunning { get; private set; }
-    public int WallSide { get; private set; } // -1 for Left, 1 for Right
+    public int WallSide { get; private set; } 
 
     private InputAction moveAction;
     private InputAction jumpAction;
@@ -68,43 +82,79 @@ public class PlayerMovement : MonoBehaviour
         wasGrounded = isGrounded;
         isGrounded = controller.isGrounded;
 
+        // Reset horizontal movement on ground
+        if (isGrounded && !isSliding && !isRolling && !isVaulting && !isClimbing)
+        {
+            playerVelocity.x = 0f;
+            playerVelocity.z = 0f;
+        }
+
+        // NEW: Reset the climb lockout when feet touch the floor (or when wall running starts)
+        if (isGrounded || IsWallRunning)
+        {
+            hasClimbedThisJump = false;
+        }
+
         if (!isGrounded) 
         {
             fallVelocity = playerVelocity.y;
         }
 
-        // 2. Modified Landing Roll: Only trigger if falling fast enough (e.g., < -5f)
+        // 1. Landing Roll
         if (!wasGrounded && isGrounded)
         {
-            if (crouchAction.IsPressed() && fallVelocity < -5f && !isRolling && !isSliding)
+            if (crouchAction.IsPressed() && fallVelocity < -5f)
             {
-                StartCoroutine(PerformRoll());
+                if (isSliding || isRolling || isVaulting || isClimbing) EndCurrentAction();
+                currentActionRoutine = StartCoroutine(PerformRoll());
             }
-            fallVelocity = 0; // Reset after landing
+            fallVelocity = 0; 
         }
 
-        // Trigger Slide: Added safety
-        if (isGrounded && sprintAction.IsPressed() && crouchAction.WasPressedThisFrame() && !isSliding && !isRolling)
+        // 2. Trigger Slide 
+        if (isGrounded && crouchAction.WasPressedThisFrame() && !isVaulting && !isClimbing)
         {
-            StartCoroutine(PerformSlide());
+            if (isSliding)
+            {
+                EndCurrentAction();
+            }
+            else if (sprintAction.IsPressed() && !isRolling)
+            {
+                EndCurrentAction(); 
+                currentActionRoutine = StartCoroutine(PerformSlide());
+            }
         }
 
-        // Only move normally if NOT sliding or rolling
-        if (!isSliding && !isRolling)
+        // 3. Normal Movement, Vault & Climb Integration
+        if (!isSliding && !isRolling && !isVaulting && !isClimbing)
         {
-            HandleMovement();
-            HandleWallRun();
-            
-            // Apply Gravity only during normal movement (Coroutines handle their own gravity)
-            Vector3 gravityVector = new Vector3(0, (IsWallRunning ? wallRunGravity : gravity), 0);
-            playerVelocity += gravityVector * Time.deltaTime;
-            controller.Move(playerVelocity * Time.deltaTime);
+            // Ground Vault Check
+            if (jumpAction.WasPressedThisFrame() && isGrounded && CheckVault())
+            {
+                EndCurrentAction();
+                currentActionRoutine = StartCoroutine(PerformVault());
+            }
+            // MODIFIED: Airborn Wall Climb Check now requires !hasClimbedThisJump
+            else if (!isGrounded && jumpAction.IsPressed() && CheckWallClimb() && !hasClimbedThisJump)
+            {
+                EndCurrentAction();
+                currentActionRoutine = StartCoroutine(PerformWallClimb());
+            }
+            else
+            {
+                HandleMovement();
+                HandleWallRun();
+                
+                Vector3 gravityVector = new Vector3(0, (IsWallRunning ? wallRunGravity : gravity), 0);
+                playerVelocity += gravityVector * Time.deltaTime;
+                controller.Move(playerVelocity * Time.deltaTime);
+            }
         }
 
-        // Update Animator
+        // 4. Update Animator
         Vector2 input = moveAction.ReadValue<Vector2>();
         float currentSpeed = IsWallRunning ? wallRunSpeed : (sprintAction.IsPressed() ? sprintSpeed : walkSpeed);
-        animator.SetFloat("Speed", (isSliding || isRolling) ? rollSpeed : input.magnitude * currentSpeed);
+        animator.SetFloat("Speed", (isSliding || isRolling || isVaulting || isClimbing) ? rollSpeed : input.magnitude * currentSpeed);
         animator.SetBool("isSliding", isSliding);
         animator.SetBool("isRolling", isRolling);
         animator.SetBool("isWallRunning", IsWallRunning);
@@ -127,13 +177,8 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleWallRun()
     {
-        if (isGrounded)
-        {
-            IsWallRunning = false;
-            return;
-        }
+        if (isGrounded) return;
 
-        // Raycast to sides
         bool wallLeft = Physics.Raycast(transform.position, -transform.right, out RaycastHit leftHit, wallDetectionRange, wallLayer);
         bool wallRight = Physics.Raycast(transform.position, transform.right, out RaycastHit rightHit, wallDetectionRange, wallLayer);
 
@@ -141,14 +186,13 @@ public class PlayerMovement : MonoBehaviour
         {
             IsWallRunning = true;
             WallSide = wallLeft ? -1 : 1;
-            playerVelocity.y = Mathf.Max(playerVelocity.y, wallRunGravity); // Maintain height
+            playerVelocity.y = Mathf.Max(playerVelocity.y, wallRunGravity); 
 
             if (jumpAction.WasPressedThisFrame())
             {
                 Vector3 wallNormal = wallLeft ? leftHit.normal : rightHit.normal;
-                // Wall Jump: Push UP and AWAY from wall
                 playerVelocity = (Vector3.up * wallJumpUpForce) + (wallNormal * wallJumpSideForce);
-                IsWallRunning = false; // Prevent immediate re-trigger
+                IsWallRunning = false; 
             }
         }
         else
@@ -157,11 +201,121 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // 2. Refined Slide Coroutine
+    private bool CheckVault()
+    {
+        Vector3 originLow = transform.position + (Vector3.up * 0.5f);
+        if (Physics.Raycast(originLow, transform.forward, out RaycastHit hitLow, vaultMaxDistance, vaultLayer))
+        {
+            Vector3 originHigh = transform.position + (Vector3.up * originalHeight);
+            if (!Physics.Raycast(originHigh, transform.forward, vaultMaxDistance, vaultLayer))
+            {
+                Vector3 originDown = hitLow.point + (transform.forward * 0.5f) + (Vector3.up * originalHeight);
+                if (Physics.Raycast(originDown, Vector3.down, out RaycastHit hitDown, originalHeight * 1.5f, vaultLayer))
+                {
+                    vaultTargetPosition = hitDown.point + (Vector3.up * (originalHeight / 2f + 0.1f)); 
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private bool CheckWallClimb()
+    {
+        Vector3 chest = transform.position + (Vector3.up * (originalHeight / 2f));
+        return Physics.Raycast(chest, transform.forward, climbCheckDistance, vaultLayer);
+    }
+
+    private bool CheckLedgeDuringClimb()
+    {
+        Vector3 originHigh = transform.position + (Vector3.up * originalHeight);
+        
+        if (!Physics.Raycast(originHigh, transform.forward, climbCheckDistance, vaultLayer))
+        {
+            Vector3 originDown = originHigh + (transform.forward * 0.8f);
+            if (Physics.Raycast(originDown, Vector3.down, out RaycastHit hitDown, originalHeight, vaultLayer))
+            {
+                vaultTargetPosition = hitDown.point + (Vector3.up * (originalHeight / 2f + 0.1f)); 
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private System.Collections.IEnumerator PerformWallClimb()
+    {
+        isClimbing = true;
+        hasClimbedThisJump = true; // NEW: Lock out further climbs until grounded
+        
+        float timer = 0f;
+        playerVelocity = Vector3.zero;
+
+        while (jumpAction.IsPressed() && timer < maxClimbTime)
+        {
+            if (!CheckWallClimb()) break;
+
+            Vector3 climbMove = (Vector3.up * climbSpeed) + (transform.forward * 2f);
+            controller.Move(climbMove * Time.deltaTime);
+
+            if (CheckLedgeDuringClimb())
+            {
+                EndCurrentAction();
+                currentActionRoutine = StartCoroutine(PerformVault());
+                yield break; 
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        EndCurrentAction();
+    }
+
+    private System.Collections.IEnumerator PerformVault()
+    {
+        isVaulting = true;
+        playerVelocity = Vector3.zero; 
+
+        Vector3 startPos = transform.position;
+        float percent = 0f;
+        
+        float distance = Vector3.Distance(startPos, vaultTargetPosition);
+        float duration = distance / vaultSpeed;
+
+        while (percent < 1f)
+        {
+            percent += Time.deltaTime / duration;
+            float smoothPercent = Mathf.SmoothStep(0f, 1f, percent); 
+            Vector3 targetPosThisFrame = Vector3.Lerp(startPos, vaultTargetPosition, smoothPercent);
+            
+            controller.Move(targetPosThisFrame - transform.position);
+            yield return null;
+        }
+
+        EndCurrentAction();
+    }
+
+    private void EndCurrentAction()
+    {
+        if (currentActionRoutine != null)
+        {
+            StopCoroutine(currentActionRoutine);
+            currentActionRoutine = null;
+        }
+
+        controller.height = originalHeight;
+        controller.center = originalCenter;
+        isSliding = false;
+        isRolling = false;
+        isVaulting = false; 
+        isClimbing = false; 
+        
+        playerVelocity.x = 0;
+        playerVelocity.z = 0; 
+    }
+
     private System.Collections.IEnumerator PerformSlide()
     {
-        // If we were already doing something, stop it
-        isRolling = false; 
         isSliding = true;
         playerVelocity = Vector3.zero;
 
@@ -173,39 +327,29 @@ public class PlayerMovement : MonoBehaviour
 
         while (timer < slideDuration)
         {
-            // Move horizontally
-            controller.Move(slideDirection * slideSpeed * Time.deltaTime);
+            Vector3 currentMove = slideDirection * slideSpeed;
             
-            // Apply a small amount of gravity manually so we don't float off ledges
-            if (!controller.isGrounded)
-            {
+            if (!controller.isGrounded) {
                 playerVelocity.y += gravity * Time.deltaTime;
-                controller.Move(new Vector3(0, playerVelocity.y, 0) * Time.deltaTime);
+            } else {
+                playerVelocity.y = -2f; 
             }
-            else
-            {
-                playerVelocity.y = -2f; // Keep stuck to ground
-            }
+            
+            currentMove.y = playerVelocity.y;
+            controller.Move(currentMove * Time.deltaTime);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        // Reset
-        controller.height = originalHeight;
-        controller.center = originalCenter;
-        isSliding = false;
-        playerVelocity = Vector3.zero; // Clear any built-up gravity
+        EndCurrentAction();
     }
 
-    // 3. Refined Roll Coroutine
     private System.Collections.IEnumerator PerformRoll()
     {
-        isSliding = false;
         isRolling = true;
         playerVelocity = Vector3.zero;
 
-        // Shrink the collider so the physics matches the rolling ball animation
         controller.height = slideHeight; 
         controller.center = new Vector3(0, originalCenter.y - (originalHeight / 2f) + (slideHeight / 2f), 0);
 
@@ -214,29 +358,21 @@ public class PlayerMovement : MonoBehaviour
 
         while (timer < rollDuration)
         {
-            // Move forward
-            controller.Move(rollDirection * rollSpeed * Time.deltaTime);
+            Vector3 currentMove = rollDirection * rollSpeed;
             
-            // Force the player DOWN to prevent "lifting" or floating
-            if (!controller.isGrounded)
-            {
+            if (!controller.isGrounded) {
                 playerVelocity.y += gravity * Time.deltaTime;
+            } else {
+                playerVelocity.y = -2f; 
             }
-            else
-            {
-                playerVelocity.y = -2f; // Snaps you to the floor
-            }
-            controller.Move(new Vector3(0, playerVelocity.y, 0) * Time.deltaTime);
+            
+            currentMove.y = playerVelocity.y;
+            controller.Move(currentMove * Time.deltaTime);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        // Reset the collider height
-        controller.height = originalHeight;
-        controller.center = originalCenter;
-        
-        isRolling = false;
-        playerVelocity = Vector3.zero;
+        EndCurrentAction();
     }
 }
