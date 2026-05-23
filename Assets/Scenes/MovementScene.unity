@@ -353,8 +353,8 @@ Transform:
   m_GameObject: {fileID: 118033557}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5000003, y: -0.5000002, z: 0.4999998, w: 0.49999976}
-  m_LocalPosition: {x: -4.249998, y: 1.7499995, z: 45.4645}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalPosition: {x: -4.2499986, y: -8.5, z: 45.4645}
+  m_LocalScale: {x: 30, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1026,7 +1026,7 @@ Transform:
   m_GameObject: {fileID: 1006954366}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.23922, y: 6.25, z: 65.19}
+  m_LocalPosition: {x: -4.23922, y: 6, z: 65.19}
   m_LocalScale: {x: 10, y: 1, z: 40}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1268,7 +1268,7 @@ GameObject:
   - component: {fileID: 1914488386}
   - component: {fileID: 1914488385}
   - component: {fileID: 1914488384}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1410,11 +1410,19 @@ MonoBehaviour:
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
+  climbSpeed: 5
+  maxClimbTime: 0.8
+  climbCheckDistance: 1
   slideSpeed: 12
   slideDuration: 0.8
   slideHeight: 1
   rollSpeed: 10
   rollDuration: 1
+  vaultMaxDistance: 2.5
+  vaultSpeed: 10
+  vaultLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!143 &1982012080
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1449,7 +1457,7 @@ Transform:
   m_GameObject: {fileID: 1982012078}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.5839996, y: 1.4999999, z: -1.118}
+  m_LocalPosition: {x: -3.5839996, y: 1.4999999, z: 44.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

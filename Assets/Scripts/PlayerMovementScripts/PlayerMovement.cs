@@ -51,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask vaultLayer; 
     private bool isVaulting = false;
     private Vector3 vaultTargetPosition; 
+    private Vector3 vaultLedgeEdge;
 
     private Vector3 playerVelocity;
     private bool isGrounded;
@@ -159,6 +160,8 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("isRolling", isRolling);
         animator.SetBool("isWallRunning", IsWallRunning);
         animator.SetInteger("WallSide", WallSide);
+        animator.SetBool("isVaulting", isVaulting);
+        animator.SetBool("isClimbing", isClimbing);
     }
 
     void HandleMovement()
@@ -212,7 +215,10 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 originDown = hitLow.point + (transform.forward * 0.5f) + (Vector3.up * originalHeight);
                 if (Physics.Raycast(originDown, Vector3.down, out RaycastHit hitDown, originalHeight * 1.5f, vaultLayer))
                 {
+                    // Inside CheckVault(), after finding hitDown
                     vaultTargetPosition = hitDown.point + (Vector3.up * (originalHeight / 2f + 0.1f)); 
+                    // The edge is the XZ of the wall and the Y of the top surface
+                    vaultLedgeEdge = new Vector3(hitLow.point.x, hitDown.point.y, hitLow.point.z); 
                     return true;
                 }
             }
@@ -274,13 +280,14 @@ public class PlayerMovement : MonoBehaviour
     private System.Collections.IEnumerator PerformVault()
     {
         isVaulting = true;
+        animator.SetBool("isVaulting", true);
         playerVelocity = Vector3.zero; 
 
         Vector3 startPos = transform.position;
         float percent = 0f;
         
         float distance = Vector3.Distance(startPos, vaultTargetPosition);
-        float duration = distance / vaultSpeed;
+        float duration = 0.6f; // Adjust this to match your Vault.anim length
 
         while (percent < 1f)
         {
@@ -288,10 +295,20 @@ public class PlayerMovement : MonoBehaviour
             float smoothPercent = Mathf.SmoothStep(0f, 1f, percent); 
             Vector3 targetPosThisFrame = Vector3.Lerp(startPos, vaultTargetPosition, smoothPercent);
             
+            // Optional: Use MatchTarget if your animation is set up for it.
+            // This helps the hand bone reach the vaultLedgeEdge at a specific time (e.g., 30% into the anim).
+            if (!animator.IsInTransition(0) && animator.GetCurrentAnimatorStateInfo(0).IsName("Vault"))
+            {
+                animator.MatchTarget(vaultLedgeEdge, Quaternion.identity, AvatarTarget.LeftHand, 
+                    new MatchTargetWeightMask(Vector3.one, 0), 0.2f, 0.4f);
+            }
+
             controller.Move(targetPosThisFrame - transform.position);
             yield return null;
         }
 
+        isVaulting = false;
+        animator.SetBool("isVaulting", false);
         EndCurrentAction();
     }
 
