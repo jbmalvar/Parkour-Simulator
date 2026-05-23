@@ -9,8 +9,6 @@ public class ParkourCamera : MonoBehaviour
     public Transform targetNeckBone;
     
     [Header("Look Settings")]
-    // NOTE: Lower this in the Inspector! (e.g., to 0.1 - 0.5) 
-    // Since we removed Time.deltaTime, the old value of 50 will be way too fast.
     public float mouseSensitivity = 0.2f; 
     public float maxLookUp = 85f;
     public float maxLookDown = 10f; 
@@ -23,10 +21,14 @@ public class ParkourCamera : MonoBehaviour
     public float tiltSpeed = 5f;
 
     private float xRotation = 0f;
-    private float yRotation = 0f; // Explicitly track Y rotation to prevent drift
+    private float yRotation = 0f; 
     private float currentTilt = 0f;
     private InputAction lookAction;
     private PlayerMovement movementScript;
+    
+    // Crouch Offset Variables
+    private float currentYOffset = 0f;
+    private float initialHeadHeight;
 
     void Start()
     {
@@ -34,10 +36,15 @@ public class ParkourCamera : MonoBehaviour
         movementScript = playerBody.GetComponent<PlayerMovement>();
         Cursor.lockState = CursorLockMode.Locked;
 
-        // Initialize Y rotation to match the body's starting rotation
         if (playerBody != null)
         {
             yRotation = playerBody.eulerAngles.y;
+            
+            // Calculate how high the head bone is relative to the player's root
+            if (targetHeadBone != null)
+            {
+                initialHeadHeight = targetHeadBone.position.y - playerBody.position.y;
+            }
         }
     }
 
@@ -45,39 +52,44 @@ public class ParkourCamera : MonoBehaviour
     {
         if (lookAction == null || playerBody == null || targetHeadBone == null) return;
 
-        // 1. Standard Mouse Look Logic...
+        // 1. Standard Mouse Look Logic
         Vector2 lookInput = lookAction.ReadValue<Vector2>();
         yRotation += lookInput.x * mouseSensitivity;
         xRotation -= lookInput.y * mouseSensitivity;
         xRotation = Mathf.Clamp(xRotation, -maxLookUp, maxLookDown);
         playerBody.rotation = Quaternion.Euler(0f, yRotation, 0f);
 
-        // 2. Position the Camera on the Head Bone
-        // We no longer need to scale bones to zero! 
-        // The Near Clip Plane of the BodyCamera handles visibility.
-        transform.position = targetHeadBone.position;
+        // 2. Determine Camera Height Offset (Crouch / Slide logic without animations)
+        float targetYOffset = 0f;
+        
+        if (movementScript != null)
+        {
+            // Drop camera by half its height if crouching or sliding
+            if (movementScript.IsCrouching || movementScript.IsSliding)
+            {
+                targetYOffset = -(initialHeadHeight / 2f);
+            }
+        }
+
+        // Smoothly transition the offset so it feels like a physical crouch
+        currentYOffset = Mathf.Lerp(currentYOffset, targetYOffset, Time.deltaTime * 10f);
+
+        // Position the camera on the Head Bone + our procedural crouch offset
+        transform.position = targetHeadBone.position + new Vector3(0, currentYOffset, 0);
 
         if (movementScript != null && movementScript.IsRolling)
         {
             // Professional "Damped" Roll Camera:
-            // 1. Get the raw head position
             Vector3 headPos = targetHeadBone.position;
+            float standingEyeHeight = playerBody.position.y + initialHeadHeight; 
             
-            // 2. Lock the Y position to the player's standing eye-level 
-            // This stops the camera from following the animation's "arc"
-            float standingEyeHeight = playerBody.position.y + 1.5f; // Adjust 1.5 to your eye level
-            
-            // 3. Smoothly transition to the roll height so it doesn't "snap"
             float currentY = Mathf.Lerp(transform.position.y, standingEyeHeight, Time.deltaTime * 10f);
-            
             transform.position = new Vector3(headPos.x, currentY, headPos.z);
-
-            // 4. Keep the rotation follow (this is what makes the roll feel immersive)
             transform.rotation = Quaternion.Slerp(transform.rotation, targetHeadBone.rotation * Quaternion.Euler(xRotation, 0f, 0f), Time.deltaTime * 15f);
         }
         else
         {
-            // Standard walk/run tilt logic
+            // Standard walk/run/crouch tilt logic
             float targetTilt = 0;
             if (movementScript.IsWallRunning)
                 targetTilt = movementScript.WallSide == 1 ? tiltAmount : -tiltAmount;

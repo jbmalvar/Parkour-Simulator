@@ -1400,12 +1400,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ParkourMovement
   walkSpeed: 5
   sprintSpeed: 8
-  wallRunSpeed: 10
   jumpHeight: 1.5
   gravity: -19.62
+  crouchSpeed: 2.5
+  crouchHeight: 1
+  wallRunSpeed: 10
   wallRunGravity: -2
   wallJumpUpForce: 5
   wallJumpSideForce: 4
+  wallRunMaxDuration: 1.5
   wallDetectionRange: 0.7
   wallLayer:
     serializedVersion: 2
@@ -1457,7 +1460,7 @@ Transform:
   m_GameObject: {fileID: 1982012078}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.5839996, y: 1.4999999, z: 44.45}
+  m_LocalPosition: {x: -3.5839996, y: 1.4999999, z: -1.6599998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
