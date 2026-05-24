@@ -57,9 +57,11 @@ public class Hazard : MonoBehaviour
 
     void TriggerDeath()
     {
-        // This will connect to James's respawn system later
-        Debug.Log("Player died from: " + hazardType.ToString());
         isInLava = false;
         currentHealth = maxHealth;
+        
+        Respawn respawn = FindAnyObjectByType<Respawn>();
+        if (respawn != null)
+            respawn.PlayerDied();
     }
 }

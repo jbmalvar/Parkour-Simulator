@@ -27,19 +27,20 @@ public class CrushingBoulder : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
         {
-            // Will connect to James's respawn system later
-            Debug.Log("Player hit by boulder - trigger respawn");
-        }
+            if (other.CompareTag("Player"))
+            {
+                Respawn respawn = FindAnyObjectByType<Respawn>();
+                if (respawn != null)
+                    respawn.PlayerDied();
+            }
 
-        if (other.CompareTag("Wall"))
-        {
-            isRolling = false;
-            resetTimer = 0f;
+            if (other.CompareTag("Wall"))
+            {
+                isRolling = false;
+                resetTimer = 0f;
+            }
         }
-    }
 
     void ResetBoulder()
     {
