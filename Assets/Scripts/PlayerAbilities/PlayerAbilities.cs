@@ -14,11 +14,16 @@ public class PlayerAbilities : MonoBehaviour
     [Header("Super Jump Settings")]
     public float superJumpMultiplier = 3f;
 
+    [Header("Time Stop Settings")]
+    public float timeStopDuration = 5f;
+    [Tooltip("How slow time goes. 0.05f is basically frozen but looks cooler than a hard 0.")]
+    public float timeScaleDuringStop = 0.05f; 
+
     private Coroutine currentAbilityRoutine;
+    private Coroutine timeStopRoutine; // Track separately so dashing doesn't cancel time stop
 
     void Start()
     {
-        // Automatically grab the required components on this GameObject
         playerMovement = GetComponent<PlayerMovement>();
         controller = GetComponent<CharacterController>();
     }
@@ -33,31 +38,55 @@ public class PlayerAbilities : MonoBehaviour
     public void TriggerSuperJump()
     {
         playerMovement.EndCurrentAction();
-        
-        // Grab the base jump height and gravity from the movement script
         float baseJumpHeight = playerMovement.jumpHeight;
         float gravity = playerMovement.gravity;
 
         playerMovement.playerVelocity.y = Mathf.Sqrt((baseJumpHeight * superJumpMultiplier) * -2f * gravity); 
     }
 
+    // NEW: Time Stop Trigger
+    public void TriggerTimeStop()
+    {
+        if (timeStopRoutine != null) StopCoroutine(timeStopRoutine);
+        timeStopRoutine = StartCoroutine(PerformTimeStop());
+    }
+
     private IEnumerator PerformGenjiDash()
     {
         float timer = 0f;
-        
-        // Reset gravity/velocity pull
         playerMovement.playerVelocity = Vector3.zero;
         Vector3 dashDirection = Camera.main.transform.forward;
 
         while (timer < dashDuration)
         {
-            // Move strictly in the dash direction
+            // Note: dash relies on unscaledDeltaTime, which is great for time stops!
             controller.Move(dashDirection * dashSpeed * Time.unscaledDeltaTime);
             timer += Time.unscaledDeltaTime; 
             yield return null;
         }
 
-        // Leave a bit of forward momentum when the dash ends
         playerMovement.playerVelocity = dashDirection * playerMovement.walkSpeed; 
+    }
+
+    // NEW: Time Stop Logic
+    private IEnumerator PerformTimeStop()
+    {
+        Debug.Log("ZA WARUDO! Time Stopped.");
+        
+        // Store original fixed delta time (important for physics stability)
+        float originalFixedDelta = Time.fixedDeltaTime;
+
+        // Slow down time
+        Time.timeScale = timeScaleDuringStop;
+        Time.fixedDeltaTime = originalFixedDelta * Time.timeScale; // Keep physics calculations in sync
+
+        // Wait for the duration in REAL time, not game time
+        yield return new WaitForSecondsRealtime(timeStopDuration);
+
+        // Restore time
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = originalFixedDelta;
+        
+        Debug.Log("Time resumed.");
     }
 }

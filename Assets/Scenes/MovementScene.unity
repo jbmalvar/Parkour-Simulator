@@ -1537,9 +1537,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9c6e0f02bf2e6348aa7caed16d4734b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GestureCaster
-  playerMovement: {fileID: 1982012079}
+  playerAbilities: {fileID: 1982012082}
   mainCamera: {fileID: 330585545}
-  cameraLookScript: {fileID: 330585547}
+  cameraLookScript: {fileID: 0}
   minDistanceBetweenPoints: 5
   drawDistance: 2
 --- !u!1 &1914488383
@@ -1665,6 +1665,7 @@ GameObject:
   - component: {fileID: 1982012081}
   - component: {fileID: 1982012080}
   - component: {fileID: 1982012079}
+  - component: {fileID: 1982012082}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -1712,6 +1713,7 @@ MonoBehaviour:
   vaultLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerVelocity: {x: 0, y: 0, z: 0}
 --- !u!143 &1982012080
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1755,6 +1757,23 @@ Transform:
   - {fileID: 1805077980}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1982012082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982012078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9635cafff1639e4c892c21b649b7b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilities
+  dashSpeed: 35
+  dashDuration: 0.25
+  superJumpMultiplier: 3
+  timeStopDuration: 5
+  timeScaleDuringStop: 0.05
 --- !u!1 &2120068445
 GameObject:
   m_ObjectHideFlags: 0
