@@ -484,4 +484,48 @@ public class PlayerMovement : MonoBehaviour
 
         EndCurrentAction();
     }
+
+
+    // --- GESTURE ABILITIES ---
+
+    public void TriggerGenjiDash()
+    {
+        // Cancel any current slide or vault
+        EndCurrentAction(); 
+        currentActionRoutine = StartCoroutine(PerformGenjiDash());
+    }
+
+    public void TriggerSuperJump()
+    {
+        EndCurrentAction();
+        
+        // A massive vertical boost
+        playerVelocity.y = Mathf.Sqrt((jumpHeight * 3f) * -2f * gravity); 
+    }
+
+    private System.Collections.IEnumerator PerformGenjiDash()
+    {
+        float dashDuration = 0.25f; // Very fast
+        float dashSpeed = 35f; 
+        float timer = 0f;
+
+        // Reset velocity so gravity doesn't pull us down during the dash
+        playerVelocity = Vector3.zero;
+
+        // Get the exact direction the camera is looking
+        Vector3 dashDirection = Camera.main.transform.forward;
+
+        while (timer < dashDuration)
+        {
+            // Move strictly in the dash direction, ignoring gravity
+            controller.Move(dashDirection * dashSpeed * Time.unscaledDeltaTime);
+            
+            // We use unscaledDeltaTime just in case time hasn't fully snapped back to 1.0x yet
+            timer += Time.unscaledDeltaTime; 
+            yield return null;
+        }
+
+        // Optional: Leave a bit of forward momentum when the dash ends
+        playerVelocity = dashDirection * walkSpeed; 
+    }
 }
