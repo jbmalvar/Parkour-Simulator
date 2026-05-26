@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 public class GestureCaster : MonoBehaviour
 {
     [Header("References")]
-    public PlayerMovement playerMovement;
-    public Camera mainCamera; 
+    public PlayerAbilities playerAbilities; 
+    public Camera mainCamera;
     
     [Tooltip("Drag the object that has your camera look script (ParkourCamera) here so we can pause it while drawing.")]
     public MonoBehaviour cameraLookScript; 
@@ -105,11 +105,13 @@ public class GestureCaster : MonoBehaviour
 
         if (Mathf.Abs(swipeVector.x) > Mathf.Abs(swipeVector.y))
         {
-            if (playerMovement != null) playerMovement.TriggerGenjiDash();
+            // Update reference here
+            if (playerAbilities != null) playerAbilities.TriggerGenjiDash();
         }
         else
         {
-            if (playerMovement != null) playerMovement.TriggerSuperJump();
+            // Update reference here
+            if (playerAbilities != null) playerAbilities.TriggerSuperJump();
         }
     }
 }
