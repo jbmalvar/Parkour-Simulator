@@ -31,14 +31,17 @@ public class Respawn : MonoBehaviour
 
     public void PlayerDied()
     {
-        // Show retry screen
         retryScreen.SetActive(true);
-        Time.timeScale = 0f; // Pause the game
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     void ReturnToCheckpoint()
     {
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         retryScreen.SetActive(false);
         player.position = checkpoints[currentCheckpoint].position;
     }
@@ -46,16 +49,19 @@ public class Respawn : MonoBehaviour
     void RestartLevel()
     {
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void GoToMainMenu()
     {
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         SceneManager.LoadScene("MainMenu");
     }
 
-    // Call this when player reaches a checkpoint
     public void ReachedCheckpoint(int index)
     {
         if (index > currentCheckpoint)

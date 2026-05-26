@@ -22,15 +22,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 05ee708593c1045218f84b46e56a8fdb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 21.85142
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 05ee708593c1045218f84b46e56a8fdb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.57
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 05ee708593c1045218f84b46e56a8fdb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 10.23
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 05ee708593c1045218f84b46e56a8fdb, type: 3}
       propertyPath: m_LocalRotation.w
@@ -99,7 +99,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.6, y: 0.099999994, z: 0.6}
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0.049999997, z: 0}
 --- !u!114 &5908308796056696801
 MonoBehaviour:
@@ -113,4 +113,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5765f8443d0364bf69e0ba01c824debb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PressurePlate
-  door: {fileID: 4463109393569584097, guid: 5482adcc210894c8dbbcce1b2c621099, type: 3}
+  door: {fileID: 0}

@@ -22,15 +22,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ee9991bf29d6b4b84a00a748d562e6e5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 11.04851
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ee9991bf29d6b4b84a00a748d562e6e5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0
+      value: -1.57
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ee9991bf29d6b4b84a00a748d562e6e5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 9.68
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ee9991bf29d6b4b84a00a748d562e6e5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -115,5 +115,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hazard
   hazardType: 0
-  lavaDamageRate: 10
-  maxHealth: 100

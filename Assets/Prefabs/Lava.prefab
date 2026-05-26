@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7933345416197946765}
   - component: {fileID: 6738196463119834424}
   - component: {fileID: 4179398563816991169}
-  - component: {fileID: 8777880028752801214}
   - component: {fileID: 4166735389791328728}
   - component: {fileID: 5653784772873576614}
   m_Layer: 0
@@ -93,27 +92,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8777880028752801214
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 686805671017422533}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &4166735389791328728
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -133,8 +111,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 6, z: 1}
+  m_Center: {x: 0, y: 3, z: 0}
 --- !u!114 &5653784772873576614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,5 +126,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hazard
   hazardType: 2
-  lavaDamageRate: 10
-  maxHealth: 100

@@ -2,12 +2,19 @@ using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
 {
-    public Transform pointA; // drag empty GameObject here
-    public Transform pointB; // drag empty GameObject here
+    public Transform pointA;
+    public Transform pointB;
     public float speed = 2f;
 
     private float progress = 0f;
     private bool movingToB = true;
+    private Transform playerOnPlatform = null;
+    private Vector3 lastPosition;
+
+    void Start()
+    {
+        lastPosition = transform.position;
+    }
 
     void Update()
     {
@@ -23,18 +30,26 @@ public class MovingPlatform : MonoBehaviour
         }
 
         transform.position = Vector3.Lerp(pointA.position, pointB.position, progress);
+
+        // Move player with platform
+        if (playerOnPlatform != null)
+        {
+            Vector3 delta = transform.position - lastPosition;
+            playerOnPlatform.GetComponent<CharacterController>().Move(delta);
+        }
+
+        lastPosition = transform.position;
     }
 
-    // Player moves WITH the platform
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
-            other.transform.SetParent(transform);
+            playerOnPlatform = other.transform;
     }
 
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
-            other.transform.SetParent(null);
+            playerOnPlatform = null;
     }
 }

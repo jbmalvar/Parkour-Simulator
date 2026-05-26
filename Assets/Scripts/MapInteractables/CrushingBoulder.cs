@@ -6,19 +6,20 @@ public class CrushingBoulder : MonoBehaviour
     public float resetTime = 3f;
     public Transform startPosition;
 
+    private Rigidbody rb;
     private bool isRolling = true;
     private float resetTimer = 0f;
 
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        if (rb == null)
+            rb = gameObject.AddComponent<Rigidbody>();
+    }
+
     void Update()
     {
-        if (isRolling)
-        {
-            // Roll forward
-            transform.Translate(Vector3.forward * rollSpeed * Time.deltaTime);
-            // Spin visually
-            transform.Rotate(Vector3.right * rollSpeed * 50 * Time.deltaTime);
-        }
-        else
+        if (!isRolling)
         {
             resetTimer += Time.deltaTime;
             if (resetTimer >= resetTime)
@@ -27,25 +28,29 @@ public class CrushingBoulder : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
         {
-            if (other.CompareTag("Player"))
-            {
-                Respawn respawn = FindAnyObjectByType<Respawn>();
-                if (respawn != null)
-                    respawn.PlayerDied();
-            }
-
-            if (other.CompareTag("Wall"))
-            {
-                isRolling = false;
-                resetTimer = 0f;
-            }
+            Respawn respawn = FindAnyObjectByType<Respawn>();
+            if (respawn != null)
+                respawn.PlayerDied();
         }
+
+        if (other.CompareTag("Wall"))
+        {
+            isRolling = false;
+            resetTimer = 0f;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+    }
 
     void ResetBoulder()
     {
         transform.position = startPosition.position;
         transform.rotation = Quaternion.identity;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         isRolling = true;
         resetTimer = 0f;
     }

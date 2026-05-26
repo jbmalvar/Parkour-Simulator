@@ -7,6 +7,7 @@ public class Hazard : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Trigger hit by: " + other.gameObject.name + " Tag: " + other.tag);
         if (!other.CompareTag("Player")) return;
         TriggerDeath();
     }
