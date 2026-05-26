@@ -1344,7 +1344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9314d7d088340484b92953dd485396da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Respawn
-  player: {fileID: 0}
+  player: {fileID: 1746755960}
   checkpoints:
   - {fileID: 1327435286}
   retryScreen: {fileID: 1749940224}
@@ -2180,6 +2180,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb92de114f62c43a7ab50145e5863ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHazardDetector
+--- !u!4 &1746755960 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4081134306961901807, guid: bce7df7d1c1954b71a6121053df4b9be, type: 3}
+  m_PrefabInstance: {fileID: 1369012414}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1746959824
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2254,7 +2259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1749940225
 RectTransform:
   m_ObjectHideFlags: 0
