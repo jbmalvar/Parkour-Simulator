@@ -18,7 +18,7 @@ public class ParkourCamera : MonoBehaviour
 
     [Header("Wall Run Effects")]
     public float tiltAmount = 15f;
-    public float slideTilt = 5f;
+    public float slideTilt = -20f;
     public float tiltSpeed = 5f;
 
     private float xRotation = 0f;
