@@ -106,6 +106,12 @@ public class PlayerMovement : MonoBehaviour
             playerVelocity.z = 0f;
         }
 
+        if (isGrounded && !isSliding && !isRolling && !isVaulting && !isClimbing)
+        {
+            playerVelocity.x = 0f;
+            playerVelocity.z = 0f;
+        }
+
         if (isGrounded || IsWallRunning)
         {
             hasClimbedThisJump = false;
@@ -181,16 +187,14 @@ public class PlayerMovement : MonoBehaviour
                 if (!IsWallRunning)
                 {
                     HandleMovement();
-                    // APPLIED: Unscaled delta time so gravity works during Time Stop
-                    playerVelocity.y += gravity * Time.unscaledDeltaTime;
+                    playerVelocity.y += gravity * Time.deltaTime;
                 }
                 
-                // APPLIED: Unscaled delta time so horizontal movement works during Time Stop
-                controller.Move(playerVelocity * Time.unscaledDeltaTime);
+                controller.Move(playerVelocity * Time.deltaTime);
             }
         }
 
-        // 4. Update Animator (Re-added from your original script so your animations don't break!)
+        // 4. Update Animator
         Vector2 input = moveAction.ReadValue<Vector2>();
         float currentSpeed = IsWallRunning ? wallRunSpeed : (sprintAction.IsPressed() && !IsCrouching ? sprintSpeed : walkSpeed);
         animator.SetFloat("Speed", (isSliding || isRolling || isVaulting || isClimbing) ? rollSpeed : input.magnitude * currentSpeed);
