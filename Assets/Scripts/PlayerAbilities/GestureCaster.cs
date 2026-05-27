@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using PDollarGestureRecognizer; // Required for PDollar
+using System.IO;                // Required for file loading
 
 [RequireComponent(typeof(LineRenderer))]
 public class GestureCaster : MonoBehaviour
@@ -19,12 +21,24 @@ public class GestureCaster : MonoBehaviour
     private LineRenderer lineRenderer;
     private List<Vector2> screenPoints = new List<Vector2>();
 
+    // NEW: List to hold our loaded PDollar gestures
+    private List<Gesture> trainingSet = new List<Gesture>();
+
     void Start()
     {
+        // I left your debug log here just in case you ever need to find the folder again!
         Debug.Log("My hidden folder is: " + Application.persistentDataPath);
+        
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 0; 
         if (mainCamera == null) mainCamera = Camera.main;
+
+        // NEW: Load all the .xml gesture files from your Assets/Resources/GestureSet folder
+        TextAsset[] gestureFiles = Resources.LoadAll<TextAsset>("GestureSet");
+        foreach (TextAsset file in gestureFiles)
+        {
+            trainingSet.Add(GestureIO.ReadGestureFromXML(file.text));
+        }
     }
 
     void Update()
@@ -70,23 +84,42 @@ public class GestureCaster : MonoBehaviour
 
         if (screenPoints.Count < 5) return; 
 
-        // Get the complex gesture string
-        string gestureSequence = GetGestureDirectionString(screenPoints);
-        Debug.Log("Gesture Drawn: " + gestureSequence);
-
-        // Check for Hourglass (e.g., Right -> Down-Left -> Right -> Up-Left)
-        // We include a few common sloppy variations of drawing an hourglass
-        if (gestureSequence.Contains("R-DL-R-UL") || gestureSequence.Contains("R-LD-R-LU") || gestureSequence.Contains("R-D-R-U"))
+        // --- 1. PDollar Shape Recognition ---
+        Point[] pointArray = new Point[screenPoints.Count];
+        for (int i = 0; i < screenPoints.Count; i++)
         {
-            if (playerAbilities != null) playerAbilities.TriggerTimeStop();
-            return;
+            // PDollar flips the Y axis mathematically, so we feed it a negative Y value
+            pointArray[i] = new Point(screenPoints[i].x, -screenPoints[i].y, 0); 
         }
 
-        // Fallback to simple swipes if it's not a complex shape
+        Gesture playerDrawing = new Gesture(pointArray);
+
+        // Only try to classify if we successfully loaded XML files
+        if (trainingSet.Count > 0)
+        {
+            Result result = PointCloudRecognizer.Classify(playerDrawing, trainingSet.ToArray());
+            Debug.Log("Drew: " + result.GestureClass + " | Accuracy: " + result.Score);
+
+            // If the player drew an Hourglass with at least 80% accuracy, cast it and STOP
+            if (result.Score > 0.8f && result.GestureClass == "Hourglass")
+            {
+                if (playerAbilities != null) playerAbilities.TriggerTimeStop();
+                return; 
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No gestures loaded! Make sure your .xml files are in Assets/Resources/GestureSet");
+        }
+
+        // --- 2. Fallback to Simple Swipes ---
+        // If the drawing wasn't a complex shape, handle it like a standard dash or jump
         Vector2 startPoint = screenPoints[0];
         Vector2 endPoint = screenPoints[screenPoints.Count - 1];
         Vector2 swipeVector = endPoint - startPoint;
         
+        if (swipeVector.magnitude < 100f) return;
+
         if (Mathf.Abs(swipeVector.x) > Mathf.Abs(swipeVector.y))
         {
             if (playerAbilities != null) playerAbilities.TriggerGenjiDash();
@@ -95,57 +128,5 @@ public class GestureCaster : MonoBehaviour
         {
             if (playerAbilities != null) playerAbilities.TriggerSuperJump();
         }
-    }
-
-    // NEW: A much more forgiving string generator
-    private string GetGestureDirectionString(List<Vector2> points)
-    {
-        if (points.Count == 0) return "";
-
-        List<string> directions = new List<string>();
-        
-        // Increasing this number makes it MORE forgiving (ignores larger jitters)
-        // Decreasing it makes it MORE exact
-        float strokeThreshold = 40f; 
-        Vector2 lastAnchor = points[0];
-
-        for (int i = 1; i < points.Count; i++)
-        {
-            // Only log a direction if the mouse has moved far enough to prove it's a deliberate stroke
-            if (Vector2.Distance(points[i], lastAnchor) > strokeThreshold)
-            {
-                Vector2 dir = (points[i] - lastAnchor).normalized;
-                string currentDir = GetDirectionFromVector(dir);
-                
-                // Only add to the list if it's a NEW direction
-                if (directions.Count == 0 || directions[directions.Count - 1] != currentDir)
-                {
-                    directions.Add(currentDir);
-                }
-                
-                // Move our anchor forward to check the next segment
-                lastAnchor = points[i]; 
-            }
-        }
-        
-        return string.Join("-", directions);
-    }
-
-    // Helper: Maps a 2D vector to an 8-way compass direction
-    private string GetDirectionFromVector(Vector2 dir)
-    {
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        if (angle < 0) angle += 360;
-
-        if (angle >= 337.5f || angle < 22.5f) return "R";
-        if (angle >= 22.5f && angle < 67.5f) return "UR";
-        if (angle >= 67.5f && angle < 112.5f) return "U";
-        if (angle >= 112.5f && angle < 157.5f) return "UL";
-        if (angle >= 157.5f && angle < 202.5f) return "L";
-        if (angle >= 202.5f && angle < 247.5f) return "DL"; // Down-Left
-        if (angle >= 247.5f && angle < 292.5f) return "D";
-        if (angle >= 292.5f && angle < 337.5f) return "DR";
-        
-        return "";
     }
 }
