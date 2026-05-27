@@ -18,6 +18,7 @@ public class ParkourCamera : MonoBehaviour
 
     [Header("Wall Run Effects")]
     public float tiltAmount = 15f;
+    public float slideTilt = 5f;
     public float tiltSpeed = 5f;
 
     private float xRotation = 0f;
@@ -74,8 +75,9 @@ public class ParkourCamera : MonoBehaviour
         // Smoothly transition the offset so it feels like a physical crouch
         currentYOffset = Mathf.Lerp(currentYOffset, targetYOffset, Time.deltaTime * 10f);
 
-        // Position the camera on the Head Bone + our procedural crouch offset
-        transform.position = targetHeadBone.position + new Vector3(0, currentYOffset, 0);
+        // This uses the headOffset you already defined (0.15f forward) 
+        // to keep the camera in front of the face while still following the head bone.
+        transform.position = targetHeadBone.TransformPoint(headOffset) + new Vector3(0, currentYOffset, 0);
 
         if (movementScript != null && movementScript.IsRolling)
         {
@@ -92,7 +94,13 @@ public class ParkourCamera : MonoBehaviour
             // Standard walk/run/crouch tilt logic
             float targetTilt = 0;
             if (movementScript.IsWallRunning)
+            {
                 targetTilt = movementScript.WallSide == 1 ? tiltAmount : -tiltAmount;
+            }
+            else if (movementScript.IsSliding)
+            {
+                targetTilt = slideTilt;
+            }
             
             currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * tiltSpeed);
             transform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
