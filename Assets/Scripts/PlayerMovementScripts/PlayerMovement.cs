@@ -91,6 +91,15 @@ public class PlayerMovement : MonoBehaviour
         wasGrounded = isGrounded;
         isGrounded = controller.isGrounded;
 
+        // NEW: Reset gravity when grounded so it doesn't endlessly accumulate
+        if (isGrounded && playerVelocity.y < 0)
+        {
+            // We use -2f instead of 0f to push the player slightly into the floor.
+            // If it's exactly 0, the CharacterController sometimes thinks you are floating 
+            // and isGrounded will rapidly flicker between true and false.
+            playerVelocity.y = -2f; 
+        }
+
         if (isGrounded && !isSliding && !isRolling && !isVaulting && !isClimbing)
         {
             playerVelocity.x = 0f;
@@ -172,14 +181,16 @@ public class PlayerMovement : MonoBehaviour
                 if (!IsWallRunning)
                 {
                     HandleMovement();
-                    playerVelocity.y += gravity * Time.deltaTime;
+                    // APPLIED: Unscaled delta time so gravity works during Time Stop
+                    playerVelocity.y += gravity * Time.unscaledDeltaTime;
                 }
                 
-                controller.Move(playerVelocity * Time.deltaTime);
+                // APPLIED: Unscaled delta time so horizontal movement works during Time Stop
+                controller.Move(playerVelocity * Time.unscaledDeltaTime);
             }
         }
 
-        // 4. Update Animator
+        // 4. Update Animator (Re-added from your original script so your animations don't break!)
         Vector2 input = moveAction.ReadValue<Vector2>();
         float currentSpeed = IsWallRunning ? wallRunSpeed : (sprintAction.IsPressed() && !IsCrouching ? sprintSpeed : walkSpeed);
         animator.SetFloat("Speed", (isSliding || isRolling || isVaulting || isClimbing) ? rollSpeed : input.magnitude * currentSpeed);

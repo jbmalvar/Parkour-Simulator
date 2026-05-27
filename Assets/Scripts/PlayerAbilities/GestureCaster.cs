@@ -21,6 +21,7 @@ public class GestureCaster : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("My hidden folder is: " + Application.persistentDataPath);
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 0; 
         if (mainCamera == null) mainCamera = Camera.main;
