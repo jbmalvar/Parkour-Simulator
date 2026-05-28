@@ -2599,6 +2599,7 @@ MonoBehaviour:
   maxLookDown: 10
   headOffset: {x: 0, y: 0.05, z: 0.15}
   tiltAmount: 15
+  slideTilt: -20
   tiltSpeed: 5
 --- !u!114 &179375773
 MonoBehaviour:
@@ -10166,6 +10167,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b4d43ab57215b4d41b05178545b40256, type: 3}
   m_PrefabInstance: {fileID: 907381936}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &923547730
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 686805671017422533, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_Name
+      value: Lava
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0000026226044
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.72
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 39.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933345416197946765, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bd4871b1a252c4854884dbc55dc3c6bb, type: 3}
 --- !u!1 &927171806
 GameObject:
   m_ObjectHideFlags: 0
@@ -16379,6 +16437,7 @@ MonoBehaviour:
   vaultLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerVelocity: {x: 0, y: 0, z: 0}
 --- !u!143 &1507605277
 CharacterController:
   m_ObjectHideFlags: 0
@@ -22305,3 +22364,4 @@ SceneRoots:
   - {fileID: 1215904141}
   - {fileID: 600874969}
   - {fileID: 28520951}
+  - {fileID: 923547730}
