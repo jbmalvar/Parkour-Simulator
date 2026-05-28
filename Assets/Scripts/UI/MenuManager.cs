@@ -24,15 +24,13 @@ public class MenuManager : MonoBehaviour
     private static readonly string[] LevelSceneNames =
     {
         "Tutorial (Index 0)",
-        "MovementScene",
-        "Level3"           // placeholder — rename when you add the 3rd scene
+        "Map"
     };
 
     public static readonly string[] LevelDisplayNames =
     {
-        "Level 1 — Tutorial",
-        "Level 2 — Movement",
-        "Level 3 — ???"
+        "Tutorial",
+        "Map 1"
     };
 
     private readonly Stack<GameObject> panelStack = new Stack<GameObject>();

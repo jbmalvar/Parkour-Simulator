@@ -64,12 +64,12 @@ public static class UISetupTool
     {
         ClearChildren(panel);
         SetupPanel(panel);
-        CreateLabel(panel, "PARKOUR", 72, FontStyles.Bold, Color.white, 16);
-        CreateSpacer(panel, 20);
-        CreateNavButton(panel, "Play",     MenuButton.Action.Play,     64);
-        CreateNavButton(panel, "About",    MenuButton.Action.About,    64);
-        CreateNavButton(panel, "Settings", MenuButton.Action.Settings, 64);
-        CreateNavButton(panel, "Exit",     MenuButton.Action.Exit,     64);
+        CreateLabel(panel, "PARKOUR", 60, FontStyles.Bold, Color.white, 14);
+        CreateSpacer(panel, 16);
+        CreateNavButton(panel, "Play",     MenuButton.Action.Play,     56);
+        CreateNavButton(panel, "About",    MenuButton.Action.About,    56);
+        CreateNavButton(panel, "Settings", MenuButton.Action.Settings, 56);
+        CreateNavButton(panel, "Exit",     MenuButton.Action.Exit,     56);
         EditorUtility.SetDirty(panel);
     }
 
@@ -77,18 +77,20 @@ public static class UISetupTool
     {
         ClearChildren(panel);
         SetupPanel(panel);
-        CreateLabel(panel, "SELECT LEVEL", 56, FontStyles.Bold, AccentRed, 6);
+        CreateLabel(panel, "SELECT LEVEL", 52, FontStyles.Bold, AccentRed, 6);
 
-        for (int i = 0; i < 3; i++)
+        // One button per level (count driven by MenuManager's display names)
+        int levelCount = MenuManager.LevelDisplayNames.Length;
+        for (int i = 0; i < levelCount; i++)
         {
-            GameObject btn = CreateButton(panel, "Level " + (i + 1), 80);
+            GameObject btn = CreateButton(panel, "Level " + (i + 1), 56);
             var levelBtn = btn.AddComponent<LevelButtonUI>();
             levelBtn.levelIndex = i;
             levelBtn.button = btn.GetComponent<Button>();
             levelBtn.levelNameText = btn.GetComponentInChildren<TextMeshProUGUI>();
         }
 
-        CreateNavButton(panel, "Back", MenuButton.Action.Back, 60);
+        CreateNavButton(panel, "Back", MenuButton.Action.Back, 56);
         EditorUtility.SetDirty(panel);
     }
 
@@ -294,8 +296,8 @@ public static class UISetupTool
 
         var vlg = panel.GetComponent<VerticalLayoutGroup>() ?? panel.AddComponent<VerticalLayoutGroup>();
         vlg.childAlignment = TextAnchor.MiddleCenter;
-        vlg.spacing = 18;
-        vlg.padding = new RectOffset(40, 40, 60, 60);
+        vlg.spacing = 14;
+        vlg.padding = new RectOffset(40, 40, 40, 40);
         // Each child sizes to its own preferred width/height (buttons get a
         // fixed width below); the group centers the column regardless of
         // canvas resolution.
