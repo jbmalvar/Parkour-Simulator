@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 vaultTargetPosition; 
     private Vector3 vaultLedgeEdge;
 
-    private Vector3 playerVelocity;
+    public Vector3 playerVelocity;
     private bool isGrounded;
     
     private Coroutine currentActionRoutine;
@@ -90,6 +90,21 @@ public class PlayerMovement : MonoBehaviour
     {
         wasGrounded = isGrounded;
         isGrounded = controller.isGrounded;
+
+        // NEW: Reset gravity when grounded so it doesn't endlessly accumulate
+        if (isGrounded && playerVelocity.y < 0)
+        {
+            // We use -2f instead of 0f to push the player slightly into the floor.
+            // If it's exactly 0, the CharacterController sometimes thinks you are floating 
+            // and isGrounded will rapidly flicker between true and false.
+            playerVelocity.y = -2f; 
+        }
+
+        if (isGrounded && !isSliding && !isRolling && !isVaulting && !isClimbing)
+        {
+            playerVelocity.x = 0f;
+            playerVelocity.z = 0f;
+        }
 
         if (isGrounded && !isSliding && !isRolling && !isVaulting && !isClimbing)
         {
@@ -395,7 +410,7 @@ public class PlayerMovement : MonoBehaviour
         EndCurrentAction();
     }
 
-    private void EndCurrentAction()
+    public void EndCurrentAction()
     {
         if (currentActionRoutine != null)
         {
