@@ -22,6 +22,10 @@ public class PlayerHazardDetector : MonoBehaviour
             currentPlate = plate;
             plate.ActivatePlate();
         }
+
+        CheckpointNotification checkpoint = other.GetComponent<CheckpointNotification>();
+        if (checkpoint != null)
+            checkpoint.ShowNotification();
     }
 
     void OnTriggerExit(Collider other)
