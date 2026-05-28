@@ -181,6 +181,9 @@ public static class UISetupTool
         layout.minHeight = minHeight;
         layout.preferredHeight = minHeight;
         layout.flexibleHeight = 0;
+        layout.minWidth = 440;
+        layout.preferredWidth = 440;
+        layout.flexibleWidth = 0;
 
         GameObject textObj = new GameObject("Text (TMP)", typeof(RectTransform));
         textObj.transform.SetParent(go.transform, false);
@@ -208,9 +211,12 @@ public static class UISetupTool
         tmp.color = color;
         tmp.characterSpacing = spacing;
 
+        int lines = text.Split('\n').Length;
+        float h = fontSize * 1.5f * lines;
+
         var layout = go.AddComponent<LayoutElement>();
-        layout.minHeight = fontSize * 1.5f;
-        layout.preferredHeight = fontSize * 1.5f;
+        layout.minHeight = h;
+        layout.preferredHeight = h;
         layout.flexibleHeight = 0;
 
         return go;
@@ -289,11 +295,13 @@ public static class UISetupTool
         var vlg = panel.GetComponent<VerticalLayoutGroup>() ?? panel.AddComponent<VerticalLayoutGroup>();
         vlg.childAlignment = TextAnchor.MiddleCenter;
         vlg.spacing = 18;
-        // Wide side padding keeps the centered column ~800px on a 1920 canvas
-        vlg.padding = new RectOffset(560, 560, 60, 60);
+        vlg.padding = new RectOffset(40, 40, 60, 60);
+        // Each child sizes to its own preferred width/height (buttons get a
+        // fixed width below); the group centers the column regardless of
+        // canvas resolution.
         vlg.childControlWidth = true;
-        vlg.childControlHeight = true;   // respect each child's preferred height
-        vlg.childForceExpandWidth = true;
+        vlg.childControlHeight = true;
+        vlg.childForceExpandWidth = false;
         vlg.childForceExpandHeight = false;
     }
 
