@@ -64,11 +64,12 @@ public static class UISetupTool
     {
         ClearChildren(panel);
         SetupPanel(panel);
-        CreateLabel(panel, "PARKOUR", 96, FontStyles.Bold, Color.white, 12);
-        CreateNavButton(panel, "Play",     MenuButton.Action.Play);
-        CreateNavButton(panel, "About",    MenuButton.Action.About);
-        CreateNavButton(panel, "Settings", MenuButton.Action.Settings);
-        CreateNavButton(panel, "Exit",     MenuButton.Action.Exit);
+        CreateLabel(panel, "PARKOUR", 72, FontStyles.Bold, Color.white, 16);
+        CreateSpacer(panel, 20);
+        CreateNavButton(panel, "Play",     MenuButton.Action.Play,     64);
+        CreateNavButton(panel, "About",    MenuButton.Action.About,    64);
+        CreateNavButton(panel, "Settings", MenuButton.Action.Settings, 64);
+        CreateNavButton(panel, "Exit",     MenuButton.Action.Exit,     64);
         EditorUtility.SetDirty(panel);
     }
 
@@ -179,12 +180,13 @@ public static class UISetupTool
         var layout = go.AddComponent<LayoutElement>();
         layout.minHeight = minHeight;
         layout.preferredHeight = minHeight;
+        layout.flexibleHeight = 0;
 
         GameObject textObj = new GameObject("Text (TMP)", typeof(RectTransform));
         textObj.transform.SetParent(go.transform, false);
         var tmp = textObj.AddComponent<TextMeshProUGUI>();
         tmp.text = label;
-        tmp.fontSize = 34;
+        tmp.fontSize = 30;
         tmp.fontStyle = FontStyles.Bold;
         tmp.alignment = TextAlignmentOptions.Center;
         tmp.color = Color.white;
@@ -207,9 +209,21 @@ public static class UISetupTool
         tmp.characterSpacing = spacing;
 
         var layout = go.AddComponent<LayoutElement>();
-        layout.minHeight = fontSize * 1.8f;
+        layout.minHeight = fontSize * 1.5f;
+        layout.preferredHeight = fontSize * 1.5f;
+        layout.flexibleHeight = 0;
 
         return go;
+    }
+
+    static void CreateSpacer(GameObject parent, float height)
+    {
+        GameObject go = new GameObject("Spacer", typeof(RectTransform));
+        go.transform.SetParent(parent.transform, false);
+        var le = go.AddComponent<LayoutElement>();
+        le.minHeight = height;
+        le.preferredHeight = height;
+        le.flexibleHeight = 0;
     }
 
     static Slider BuildSlider(GameObject go)
@@ -274,10 +288,11 @@ public static class UISetupTool
 
         var vlg = panel.GetComponent<VerticalLayoutGroup>() ?? panel.AddComponent<VerticalLayoutGroup>();
         vlg.childAlignment = TextAnchor.MiddleCenter;
-        vlg.spacing = 16;
-        vlg.padding = new RectOffset(80, 80, 60, 60);
+        vlg.spacing = 18;
+        // Wide side padding keeps the centered column ~800px on a 1920 canvas
+        vlg.padding = new RectOffset(560, 560, 60, 60);
         vlg.childControlWidth = true;
-        vlg.childControlHeight = false;
+        vlg.childControlHeight = true;   // respect each child's preferred height
         vlg.childForceExpandWidth = true;
         vlg.childForceExpandHeight = false;
     }
