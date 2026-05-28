@@ -3,78 +3,12 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
-using System.IO;
-using System.Collections.Generic;
 
 public static class SceneSetupTool
 {
-    // ── Main Menu Scene Setup ─────────────────────────────────────────────
-
-    [MenuItem("Tools/1 - Create MainMenu Scene")]
-    public static void CreateMainMenuScene()
-    {
-        string mainMenuPath = "Assets/Scenes/MainMenu.unity";
-
-        // Save current scene first
-        EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-
-        // Open MovementScene to grab UI objects
-        Scene movementScene = EditorSceneManager.OpenScene("Assets/Scenes/MovementScene.unity", OpenSceneMode.Single);
-
-        // Find UI objects to move
-        string[] objectsToMove = { "MainMenuCanvas", "ScreenFade Canvas", "EventSystem" };
-        List<GameObject> found = new List<GameObject>();
-
-        foreach (var root in movementScene.GetRootGameObjects())
-        {
-            foreach (var name in objectsToMove)
-                if (root.name == name) { found.Add(root); break; }
-        }
-
-        if (found.Count == 0)
-        {
-            Debug.LogError("Could not find MainMenuCanvas, ScreenFade Canvas or EventSystem in MovementScene. Make sure you're running this from MovementScene.");
-            return;
-        }
-
-        // Create the MainMenu scene
-        Scene mainMenu = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        mainMenu.name = "MainMenu";
-
-        // Move UI objects into MainMenu scene
-        foreach (var go in found)
-            SceneManager.MoveGameObjectToScene(go, mainMenu);
-
-        // Add a directional light to MainMenu so it's not pitch black
-        var lightGO = new GameObject("Directional Light");
-        SceneManager.MoveGameObjectToScene(lightGO, mainMenu);
-        var light = lightGO.AddComponent<Light>();
-        light.type = LightType.Directional;
-        lightGO.transform.rotation = Quaternion.Euler(50, -30, 0);
-
-        // Save MainMenu scene
-        EditorSceneManager.SaveScene(mainMenu, mainMenuPath);
-
-        // Save MovementScene (now without the UI objects)
-        EditorSceneManager.SaveScene(movementScene);
-
-        // Update Build Settings
-        var scenes = new EditorBuildSettingsScene[]
-        {
-            new EditorBuildSettingsScene(mainMenuPath, true),
-            new EditorBuildSettingsScene("Assets/Scenes/Tutorial (Index 0).unity", true),
-            new EditorBuildSettingsScene("Assets/Scenes/MovementScene.unity", true),
-        };
-        EditorBuildSettings.scenes = scenes;
-
-        Debug.Log("✓ MainMenu scene created at " + mainMenuPath + " and build settings updated!");
-        Debug.Log("  Open MainMenu.unity and hit Play to test the menu.");
-    }
-
     // ── Tutorial Checkpoint Setup ─────────────────────────────────────────
 
-    [MenuItem("Tools/2 - Setup Tutorial Checkpoint")]
+    [MenuItem("Tools/Setup Tutorial Checkpoints")]
     public static void SetupTutorialCheckpoint()
     {
         EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();

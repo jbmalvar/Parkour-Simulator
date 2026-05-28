@@ -18,7 +18,7 @@ public static class MenuPolishTool
     static readonly Color TextColor     = Color.white;
     static readonly Color AccentRed     = new Color(0.92f, 0.18f, 0.12f, 1f);
 
-    [MenuItem("Tools/3 - Polish Menu Style")]
+    [MenuItem("Tools/Restyle Menu (no rebuild)")]
     public static void PolishMenu()
     {
         GameObject canvas = FindInactive("MainMenuCanvas");
@@ -119,7 +119,6 @@ public static class MenuPolishTool
             bool isButtonLabel = tmp.GetComponentInParent<Button>() != null;
 
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.enableWordWrapping = true;
 
             if (isTitle)
             {

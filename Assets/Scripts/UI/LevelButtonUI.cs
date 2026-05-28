@@ -15,6 +15,13 @@ public class LevelButtonUI : MonoBehaviour
     public TextMeshProUGUI lockLabel;    // Shows "LOCKED" when unavailable
     public GameObject lockedOverlay;    // Optional dim/grey overlay image
 
+    void Awake()
+    {
+        // Self-wire so the button works without manual Inspector OnClick setup
+        if (button == null) button = GetComponent<Button>();
+        if (button != null) button.onClick.AddListener(OnClick);
+    }
+
     void OnEnable() => Refresh();
 
     public void Refresh()
