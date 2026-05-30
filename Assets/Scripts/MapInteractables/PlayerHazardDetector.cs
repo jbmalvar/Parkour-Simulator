@@ -11,9 +11,7 @@ public class PlayerHazardDetector : MonoBehaviour
         Hazard hazard = other.GetComponent<Hazard>();
         if (hazard != null)
         {
-            Respawn respawn = FindAnyObjectByType<Respawn>();
-            if (respawn != null)
-                respawn.PlayerDied();
+            CheckpointManager.Instance?.TriggerDeath();
         }
 
         PressurePlate plate = other.GetComponent<PressurePlate>();
