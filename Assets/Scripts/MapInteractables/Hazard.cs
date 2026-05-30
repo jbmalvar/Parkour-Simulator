@@ -14,8 +14,6 @@ public class Hazard : MonoBehaviour
 
     void TriggerDeath()
     {
-        Respawn respawn = FindAnyObjectByType<Respawn>();
-        if (respawn != null)
-            respawn.PlayerDied();
+        CheckpointManager.Instance?.TriggerDeath();
     }
 }

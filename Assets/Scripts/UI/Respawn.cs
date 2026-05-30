@@ -25,7 +25,8 @@ public class Respawn : MonoBehaviour
         retryScreen.SetActive(false);
 
         returnToCheckpointButton.onClick.AddListener(ReturnToCheckpoint);
-        restartLevelButton.onClick.AddListener(RestartLevel);
+        if (restartLevelButton != null)
+            restartLevelButton.onClick.AddListener(RestartLevel);
         mainMenuButton.onClick.AddListener(GoToMainMenu);
     }
 

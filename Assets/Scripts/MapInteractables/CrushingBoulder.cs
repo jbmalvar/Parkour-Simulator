@@ -31,9 +31,7 @@ public class CrushingBoulder : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Respawn respawn = FindAnyObjectByType<Respawn>();
-            if (respawn != null)
-                respawn.PlayerDied();
+            CheckpointManager.Instance?.TriggerDeath();
         }
 
         if (other.CompareTag("Wall"))
