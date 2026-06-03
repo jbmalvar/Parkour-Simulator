@@ -8,6 +8,10 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller;
     private float fallVelocity;
 
+    [Header("Fall Damage Settings")]
+    public float fatalFallSpeed = -18f; // Speed at which player dies without rolling
+    public float maxRollSurvivalSpeed = -25f; // Speed at which player dies EVEN IF they roll
+
     [Header("Movement Settings")]
     public float walkSpeed = 5f;
     public float sprintSpeed = 8f;
@@ -122,14 +126,37 @@ public class PlayerMovement : MonoBehaviour
             fallVelocity = playerVelocity.y;
         }
 
-        // 1. Landing Roll
+        // // 1. Landing Roll
+        // if (!wasGrounded && isGrounded)
+        // {
+        //     if (crouchAction.IsPressed() && fallVelocity < -5f)
+        //     {
+        //         if (isSliding || isRolling || isVaulting || isClimbing) EndCurrentAction();
+        //         currentActionRoutine = StartCoroutine(PerformRoll());
+        //     }
+        //     fallVelocity = 0; 
+        // }
+        // 1. Landing Roll & Fall Damage
         if (!wasGrounded && isGrounded)
         {
-            if (crouchAction.IsPressed() && fallVelocity < -5f)
+            // Check if the player is pressing crouch fast enough to trigger a roll
+            bool tryingToRoll = crouchAction.IsPressed() && fallVelocity < -5f;
+
+            if (tryingToRoll && fallVelocity >= maxRollSurvivalSpeed)
             {
+                // Player successfully rolled AND didn't exceed the absolute max survival speed
                 if (isSliding || isRolling || isVaulting || isClimbing) EndCurrentAction();
                 currentActionRoutine = StartCoroutine(PerformRoll());
             }
+            else if (fallVelocity <= fatalFallSpeed)
+            {
+                // Player either didn't roll, or fell so fast that even a roll couldn't save them
+                CheckpointManager.Instance?.TriggerDeath();
+                
+                // Kill momentum so the corpse/camera doesn't keep sliding
+                playerVelocity = Vector3.zero; 
+            }
+
             fallVelocity = 0; 
         }
 

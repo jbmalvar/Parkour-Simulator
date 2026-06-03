@@ -2405,7 +2405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ed234bd74b5e4ac3959a532a5c6ddc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheckpointManager
-  player: {fileID: 0}
+  player: {fileID: 1438073231}
   screenFade: {fileID: 2005499652}
   deathYThreshold: -20
   respawnDelay: 0.4
@@ -15433,6 +15433,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c654432c48086a2449f29003283b87c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ParkourMovement
+  fatalFallSpeed: -18
+  maxRollSurvivalSpeed: -25
   walkSpeed: 5
   sprintSpeed: 8
   jumpHeight: 1.5
