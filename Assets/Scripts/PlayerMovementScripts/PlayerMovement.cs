@@ -231,10 +231,10 @@ public class PlayerMovement : MonoBehaviour
                 if (!IsWallRunning)
                 {
                     HandleMovement();
-                    playerVelocity.y += gravity * Time.deltaTime;
+                    playerVelocity.y += gravity * Time.unscaledDeltaTime;
                 }
                 
-                controller.Move(playerVelocity * Time.deltaTime);
+                controller.Move(playerVelocity * Time.unscaledDeltaTime);
             }
         }
 
@@ -259,7 +259,7 @@ public class PlayerMovement : MonoBehaviour
         if (IsCrouching) targetSpeed = crouchSpeed;
         else if (sprintAction.IsPressed()) targetSpeed = sprintSpeed;
 
-        controller.Move(move * targetSpeed * Time.deltaTime);
+        controller.Move(move * targetSpeed * Time.unscaledDeltaTime);
     }
 
     private bool CanStand()
@@ -312,7 +312,7 @@ public class PlayerMovement : MonoBehaviour
                 wallRunTimer = 0f;
             }
 
-            wallRunTimer += Time.deltaTime;
+            wallRunTimer += Time.unscaledDeltaTime;
 
             if (wallRunTimer < wallRunMaxDuration)
             {
@@ -330,7 +330,7 @@ public class PlayerMovement : MonoBehaviour
                 
                 // 3. Move along the wall
                 Vector3 moveDirection = (wallForward * wallRunSpeed) + stickToWall;
-                controller.Move(moveDirection * Time.deltaTime);
+                controller.Move(moveDirection * Time.unscaledDeltaTime);
 
                 // 4. Apply custom gentle gravity (instead of falling like a rock)
                 playerVelocity.y = wallRunGravity;
@@ -406,7 +406,7 @@ public class PlayerMovement : MonoBehaviour
             if (!CheckWallClimb()) break;
 
             Vector3 climbMove = (Vector3.up * climbSpeed) + (transform.forward * 2f);
-            controller.Move(climbMove * Time.deltaTime);
+            controller.Move(climbMove * Time.unscaledDeltaTime);
 
             if (CheckLedgeDuringClimb())
             {
@@ -415,7 +415,7 @@ public class PlayerMovement : MonoBehaviour
                 yield break; 
             }
 
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             yield return null;
         }
 
@@ -436,7 +436,7 @@ public class PlayerMovement : MonoBehaviour
 
         while (percent < 1f)
         {
-            percent += Time.deltaTime / duration;
+            percent += Time.unscaledDeltaTime / duration;
             
             // 1. Go UP very quickly (finish upward movement at 50% of the vault)
             float upPercent = Mathf.Clamp01(percent * 2f);
@@ -483,6 +483,13 @@ public class PlayerMovement : MonoBehaviour
             currentActionRoutine = null;
         }
 
+        // ---> THIS IS THE MISSING PIECE! <---
+        // This guarantees the physics engine turns back on no matter how the action ends.
+        if (controller != null)
+        {
+            controller.enabled = true;
+        }
+
         isSliding = false;
         isRolling = false;
         isVaulting = false; 
@@ -520,15 +527,15 @@ public class PlayerMovement : MonoBehaviour
             Vector3 currentMove = slideDirection * slideSpeed;
             
             if (!controller.isGrounded) {
-                playerVelocity.y += gravity * Time.deltaTime;
+                playerVelocity.y += gravity * Time.unscaledDeltaTime;
             } else {
                 playerVelocity.y = -2f; 
             }
             
             currentMove.y = playerVelocity.y;
-            controller.Move(currentMove * Time.deltaTime);
+            controller.Move(currentMove * Time.unscaledDeltaTime);
 
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             yield return null;
         }
 
@@ -550,15 +557,15 @@ public class PlayerMovement : MonoBehaviour
             Vector3 currentMove = rollDirection * rollSpeed;
             
             if (!controller.isGrounded) {
-                playerVelocity.y += gravity * Time.deltaTime;
+                playerVelocity.y += gravity * Time.unscaledDeltaTime;
             } else {
                 playerVelocity.y = -2f; 
             }
             
             currentMove.y = playerVelocity.y;
-            controller.Move(currentMove * Time.deltaTime);
+            controller.Move(currentMove * Time.unscaledDeltaTime);
 
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             yield return null;
         }
 

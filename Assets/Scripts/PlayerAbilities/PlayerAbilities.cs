@@ -68,24 +68,32 @@ public class PlayerAbilities : MonoBehaviour
         playerMovement.playerVelocity = dashDirection * playerMovement.walkSpeed; 
     }
 
-    // NEW: Time Stop Logic
+    // NEW: Brute-Force Time Stop Logic
     private IEnumerator PerformTimeStop()
     {
         Debug.Log("ZA WARUDO! Time Stopped.");
         
-        // Store original fixed delta time (important for physics stability)
-        float originalFixedDelta = Time.fixedDeltaTime;
+        float timer = 0f;
+        float defaultFixedDelta = 0.02f; // Unity's default physics step
+        
+        // Loop every single frame until the 5 seconds are up
+        while (timer < timeStopDuration)
+        {
+            // OVERRIDE: Force time to be slow every single frame.
+            // This completely bullies any other script trying to set time back to 1.
+            Time.timeScale = timeScaleDuringStop;
+            Time.fixedDeltaTime = defaultFixedDelta * Time.timeScale;
+            
+            // Count up using real-world time
+            timer += Time.unscaledDeltaTime; 
+            
+            // Wait until the next frame and enforce it again
+            yield return null; 
+        }
 
-        // Slow down time
-        Time.timeScale = timeScaleDuringStop;
-        Time.fixedDeltaTime = originalFixedDelta * Time.timeScale; // Keep physics calculations in sync
-
-        // Wait for the duration in REAL time, not game time
-        yield return new WaitForSecondsRealtime(timeStopDuration);
-
-        // Restore time
+        // Once the loop finishes, put the game back to normal
         Time.timeScale = 1f;
-        Time.fixedDeltaTime = originalFixedDelta;
+        Time.fixedDeltaTime = defaultFixedDelta;
         
         Debug.Log("Time resumed.");
     }
