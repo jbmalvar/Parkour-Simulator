@@ -16,6 +16,6 @@ public class UIManager : MonoBehaviour
 
         // If this is the first UIManager, claim the throne and protect it from scene loads
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        // DontDestroyOnLoad(gameObject);
     }
 }

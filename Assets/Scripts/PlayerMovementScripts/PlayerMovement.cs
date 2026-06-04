@@ -150,11 +150,28 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (fallVelocity <= fatalFallSpeed)
             {
-                // Player either didn't roll, or fell so fast that even a roll couldn't save them
-                CheckpointManager.Instance?.TriggerDeath();
+                Debug.Log($"Fatal fall! Velocity: {fallVelocity}");
                 
-                // Kill momentum so the corpse/camera doesn't keep sliding
+                // ---> NEW: Send 999 damage to Health Script so it triggers the temporary restart! <---
+                if (GetComponent<PlayerHealth>() != null)
+                {
+                    GetComponent<PlayerHealth>().TakeDamage(999);
+                }
+                
                 playerVelocity = Vector3.zero; 
+            }
+            else if (fallVelocity < -12f) 
+            {
+                // ---> NEW: Wiggle Room Math <---
+                // Subtract the "safe" fall speed (12f) from their actual fall speed.
+                // This means a fall of -13 only applies damage for the 1 extra unit of speed.
+                float excessSpeed = Mathf.Abs(fallVelocity) - 12f;
+                int damageAmount = Mathf.RoundToInt(excessSpeed * 10f); 
+                
+                if (GetComponent<PlayerHealth>() != null)
+                {
+                    GetComponent<PlayerHealth>().TakeDamage(damageAmount);
+                }
             }
 
             fallVelocity = 0; 
@@ -410,17 +427,33 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("isVaulting", true);
         playerVelocity = Vector3.zero; 
 
+        // ---> NEW: Turn off collision so we don't snag on complex building geometry <---
+        controller.enabled = false;
+
         Vector3 startPos = transform.position;
         float percent = 0f;
-        
-        float distance = Vector3.Distance(startPos, vaultTargetPosition);
         float duration = 0.6f; 
 
         while (percent < 1f)
         {
             percent += Time.deltaTime / duration;
-            float smoothPercent = Mathf.SmoothStep(0f, 1f, percent); 
-            Vector3 targetPosThisFrame = Vector3.Lerp(startPos, vaultTargetPosition, smoothPercent);
+            
+            // 1. Go UP very quickly (finish upward movement at 50% of the vault)
+            float upPercent = Mathf.Clamp01(percent * 2f);
+            float smoothUp = Mathf.SmoothStep(0f, 1f, upPercent);
+            
+            // 2. Add a tiny arc to clear raised roof edges (peaks in the middle of the vault)
+            float extraHeight = Mathf.Sin(percent * Mathf.PI) * 0.3f; 
+
+            // 3. Delay the forward movement slightly so we go up BEFORE we go in
+            float forwardPercent = Mathf.Clamp01((percent - 0.1f) * 1.1f);
+            float smoothForward = Mathf.SmoothStep(0f, 1f, forwardPercent); 
+
+            Vector3 targetPosThisFrame = new Vector3(
+                Mathf.Lerp(startPos.x, vaultTargetPosition.x, smoothForward),
+                Mathf.Lerp(startPos.y, vaultTargetPosition.y, smoothUp) + extraHeight,
+                Mathf.Lerp(startPos.z, vaultTargetPosition.z, smoothForward)
+            );
             
             if (!animator.IsInTransition(0) && animator.GetCurrentAnimatorStateInfo(0).IsName("Vault"))
             {
@@ -428,9 +461,14 @@ public class PlayerMovement : MonoBehaviour
                     new MatchTargetWeightMask(Vector3.one, 0), 0.2f, 0.4f);
             }
 
-            controller.Move(targetPosThisFrame - transform.position);
+            // ---> NEW: Teleport the transform directly instead of using controller.Move <---
+            transform.position = targetPosThisFrame;
+            
             yield return null;
         }
+
+        // ---> NEW: Turn collision back on now that we are safely standing on the roof <---
+        controller.enabled = true;
 
         isVaulting = false;
         animator.SetBool("isVaulting", false);

@@ -98,7 +98,7 @@ public class GestureCaster : MonoBehaviour
         if (trainingSet.Count > 0)
         {
             Result result = PointCloudRecognizer.Classify(playerDrawing, trainingSet.ToArray());
-            Debug.Log("Drew: " + result.GestureClass + " | Accuracy: " + result.Score);
+            // Debug.Log("Drew: " + result.GestureClass + " | Accuracy: " + result.Score);
 
             // If the player drew an Hourglass with at least 80% accuracy, cast it and STOP
             if (result.Score > 0.8f && result.GestureClass == "Hourglass")
