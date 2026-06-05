@@ -8,35 +8,50 @@ public class PlayerHealth : MonoBehaviour
     public int maxHealth = 100;
     private int currentHealth;
 
+    [Header("UI")]
+    public Image healthBarFill; // The colored bar that shrinks
+    public float healthBarSpeed = 10f; // How fast the bar slides to the new value
+
     [Header("Effects")]
     public CameraShake cameraShake; 
     public Image damageOverlay; 
     public float fadeSpeed = 1.5f; 
 
     [Header("Audio")]
-    public AudioSource audioSource; // The speaker
-    public AudioClip hurtSound;     // Sound when taking normal damage
-    public AudioClip deathSound;    // Sound when health hits 0
+    public AudioSource audioSource; 
+    public AudioClip hurtSound;     
+    public AudioClip deathSound;    
 
     void Awake()
     {
-        // Force the script to turn back on (in case the death sequence left it off)
         this.enabled = true;
-
         currentHealth = maxHealth;
         
         if (damageOverlay != null)
         {
             damageOverlay.color = new Color(1, 0, 0, 0); 
         }
+
+        // Snap the health bar to full instantly when the game starts
+        if (healthBarFill != null)
+        {
+            healthBarFill.fillAmount = 1f; 
+        }
     }
 
     void Update()
     {
+        float healthPercent = (float)currentHealth / maxHealth;
+
+        // ---> NEW: Smoothly animate the health bar <---
+        if (healthBarFill != null)
+        {
+            healthBarFill.fillAmount = Mathf.Lerp(healthBarFill.fillAmount, healthPercent, healthBarSpeed * Time.unscaledDeltaTime);
+        }
+
+        // Handle the red damage screen
         if (damageOverlay != null)
         {
-            float healthPercent = (float)currentHealth / maxHealth;
-            
             float minAlpha = 0f;
             if (healthPercent < 0.5f)
             {
@@ -47,12 +62,12 @@ public class PlayerHealth : MonoBehaviour
 
             if (currentColor.a > minAlpha)
             {
-                currentColor.a -= fadeSpeed * Time.deltaTime;
+                currentColor.a -= fadeSpeed * Time.unscaledDeltaTime;
                 currentColor.a = Mathf.Max(currentColor.a, minAlpha); 
             }
             else if (currentColor.a < minAlpha)
             {
-                currentColor.a += fadeSpeed * Time.deltaTime;
+                currentColor.a += fadeSpeed * Time.unscaledDeltaTime;
                 currentColor.a = Mathf.Min(currentColor.a, minAlpha);
             }
 
@@ -66,10 +81,8 @@ public class PlayerHealth : MonoBehaviour
         
         Debug.Log($"Ouch! Took {damageAmount} damage. Current Health: {currentHealth}");
 
-        // ---> NEW: Play the hurt sound! <---
         if (audioSource != null && hurtSound != null && currentHealth > 0)
         {
-            // PlayOneShot lets multiple sounds overlap without cutting each other off
             audioSource.PlayOneShot(hurtSound);
         }
 
@@ -93,7 +106,6 @@ public class PlayerHealth : MonoBehaviour
     {
         Debug.Log("Player Died! Restarting level in 1 second...");
         
-        // ---> NEW: Play the death sound! <---
         if (audioSource != null && deathSound != null)
         {
             audioSource.PlayOneShot(deathSound);
@@ -111,7 +123,7 @@ public class PlayerHealth : MonoBehaviour
             damageOverlay.color = new Color(1, 0, 0, 1f); 
         }
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
 
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
