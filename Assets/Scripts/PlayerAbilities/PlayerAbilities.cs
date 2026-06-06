@@ -6,6 +6,14 @@ public class PlayerAbilities : MonoBehaviour
 {
     private PlayerMovement playerMovement;
     private CharacterController controller;
+    
+    // ---> NEW: Reference to the mana bank <---
+    private PlayerMana playerMana; 
+
+    [Header("Mana Costs")]
+    public float dashManaCost = 20f;
+    public float superJumpManaCost = 30f;
+    public float timeStopManaCost = 50f;
 
     [Header("Genji Dash Settings")]
     public float dashSpeed = 35f;
@@ -20,16 +28,22 @@ public class PlayerAbilities : MonoBehaviour
     public float timeScaleDuringStop = 0.05f; 
 
     private Coroutine currentAbilityRoutine;
-    private Coroutine timeStopRoutine; // Track separately so dashing doesn't cancel time stop
+    private Coroutine timeStopRoutine; 
 
     void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
         controller = GetComponent<CharacterController>();
+        
+        // ---> NEW: Grab the mana script <---
+        playerMana = GetComponent<PlayerMana>(); 
     }
 
     public void TriggerGenjiDash()
     {
+        // ---> NEW: Check mana before casting <---
+        if (playerMana != null && !playerMana.TryUseMana(dashManaCost)) return; 
+
         playerMovement.EndCurrentAction(); 
         if (currentAbilityRoutine != null) StopCoroutine(currentAbilityRoutine);
         currentAbilityRoutine = StartCoroutine(PerformGenjiDash());
@@ -37,6 +51,9 @@ public class PlayerAbilities : MonoBehaviour
 
     public void TriggerSuperJump()
     {
+        // ---> NEW: Check mana before casting <---
+        if (playerMana != null && !playerMana.TryUseMana(superJumpManaCost)) return;
+
         playerMovement.EndCurrentAction();
         float baseJumpHeight = playerMovement.jumpHeight;
         float gravity = playerMovement.gravity;
@@ -44,9 +61,11 @@ public class PlayerAbilities : MonoBehaviour
         playerMovement.playerVelocity.y = Mathf.Sqrt((baseJumpHeight * superJumpMultiplier) * -2f * gravity); 
     }
 
-    // NEW: Time Stop Trigger
     public void TriggerTimeStop()
     {
+        // ---> NEW: Check mana before casting <---
+        if (playerMana != null && !playerMana.TryUseMana(timeStopManaCost)) return;
+
         if (timeStopRoutine != null) StopCoroutine(timeStopRoutine);
         timeStopRoutine = StartCoroutine(PerformTimeStop());
     }
@@ -59,7 +78,6 @@ public class PlayerAbilities : MonoBehaviour
 
         while (timer < dashDuration)
         {
-            // Note: dash relies on unscaledDeltaTime, which is great for time stops!
             controller.Move(dashDirection * dashSpeed * Time.unscaledDeltaTime);
             timer += Time.unscaledDeltaTime; 
             yield return null;
@@ -68,30 +86,22 @@ public class PlayerAbilities : MonoBehaviour
         playerMovement.playerVelocity = dashDirection * playerMovement.walkSpeed; 
     }
 
-    // NEW: Brute-Force Time Stop Logic
     private IEnumerator PerformTimeStop()
     {
         Debug.Log("ZA WARUDO! Time Stopped.");
         
         float timer = 0f;
-        float defaultFixedDelta = 0.02f; // Unity's default physics step
+        float defaultFixedDelta = 0.02f; 
         
-        // Loop every single frame until the 5 seconds are up
         while (timer < timeStopDuration)
         {
-            // OVERRIDE: Force time to be slow every single frame.
-            // This completely bullies any other script trying to set time back to 1.
             Time.timeScale = timeScaleDuringStop;
             Time.fixedDeltaTime = defaultFixedDelta * Time.timeScale;
             
-            // Count up using real-world time
             timer += Time.unscaledDeltaTime; 
-            
-            // Wait until the next frame and enforce it again
             yield return null; 
         }
 
-        // Once the loop finishes, put the game back to normal
         Time.timeScale = 1f;
         Time.fixedDeltaTime = defaultFixedDelta;
         
