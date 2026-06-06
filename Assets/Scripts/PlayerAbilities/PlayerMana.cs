@@ -50,4 +50,13 @@ public class PlayerMana : MonoBehaviour
             manaBarFill.fillAmount = currentMana / maxMana;
         }
     }
+
+    // ---> NEW: Drains everything and returns the amount taken to scale abilities <---
+    public float DrainAllMana()
+    {
+        float manaDrained = currentMana;
+        currentMana = 0f;
+        UpdateUI();
+        return manaDrained;
+    }
 }

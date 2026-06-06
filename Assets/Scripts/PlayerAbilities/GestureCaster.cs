@@ -88,23 +88,33 @@ public class GestureCaster : MonoBehaviour
         Point[] pointArray = new Point[screenPoints.Count];
         for (int i = 0; i < screenPoints.Count; i++)
         {
-            // PDollar flips the Y axis mathematically, so we feed it a negative Y value
             pointArray[i] = new Point(screenPoints[i].x, -screenPoints[i].y, 0); 
         }
 
         Gesture playerDrawing = new Gesture(pointArray);
 
-        // Only try to classify if we successfully loaded XML files
         if (trainingSet.Count > 0)
         {
             Result result = PointCloudRecognizer.Classify(playerDrawing, trainingSet.ToArray());
-            // Debug.Log("Drew: " + result.GestureClass + " | Accuracy: " + result.Score);
 
-            // If the player drew an Hourglass with at least 80% accuracy, cast it and STOP
+            // Check for Hourglass (Time Stop)
             if (result.Score > 0.8f && result.GestureClass == "Hourglass")
             {
                 if (playerAbilities != null) playerAbilities.TriggerTimeStop();
                 return; 
+            }
+
+            // ---> NEW: Check for Circle (Infinite Stamina) <---
+            if (result.Score > 0.9f && result.GestureClass == "infinitestam")
+            {
+                if (playerAbilities != null) playerAbilities.TriggerInfiniteStamina();
+                return;
+            }
+
+            if (result.Score > 0.9f && result.GestureClass == "HealCross")
+            {
+                if (playerAbilities != null) playerAbilities.TriggerQuickRegen();
+                return;
             }
         }
         else
@@ -113,7 +123,6 @@ public class GestureCaster : MonoBehaviour
         }
 
         // --- 2. Fallback to Simple Swipes ---
-        // If the drawing wasn't a complex shape, handle it like a standard dash or jump
         Vector2 startPoint = screenPoints[0];
         Vector2 endPoint = screenPoints[screenPoints.Count - 1];
         Vector2 swipeVector = endPoint - startPoint;

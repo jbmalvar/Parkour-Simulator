@@ -128,4 +128,15 @@ public class PlayerHealth : MonoBehaviour
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
     }
+
+    // ---> NEW: Method to handle incoming healing <---
+    public void Heal(int healAmount)
+    {
+        if (currentHealth <= 0) return; // No reviving from the dead!
+        
+        currentHealth += healAmount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        
+        Debug.Log($"Healed for {healAmount}. Current Health: {currentHealth}");
+    }
 }
