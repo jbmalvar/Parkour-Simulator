@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private Animator animator;
     private CharacterController controller;
+    private PlayerStamina playerStamina;
     private float fallVelocity;
 
     [Header("Fall Damage Settings")]
@@ -88,6 +89,8 @@ public class PlayerMovement : MonoBehaviour
 
         originalHeight = controller.height;
         originalCenter = controller.center;
+
+        playerStamina = GetComponent<PlayerStamina>();
     }
 
     void Update()
@@ -256,8 +259,17 @@ public class PlayerMovement : MonoBehaviour
         Vector3 move = transform.right * input.x + transform.forward * input.y;
         
         float targetSpeed = walkSpeed;
-        if (IsCrouching) targetSpeed = crouchSpeed;
-        else if (sprintAction.IsPressed()) targetSpeed = sprintSpeed;
+        
+        if (IsCrouching) 
+        {
+            targetSpeed = crouchSpeed;
+        }
+        // ---> NEW: Check if holding sprint AND we have stamina in the bank <---
+        else if (sprintAction.IsPressed() && playerStamina != null && playerStamina.HasStamina() && input.magnitude > 0.1f) 
+        {
+            targetSpeed = sprintSpeed;
+            playerStamina.DrainStamina(); // Tell the bank to deduct energy
+        }
 
         controller.Move(move * targetSpeed * Time.unscaledDeltaTime);
     }

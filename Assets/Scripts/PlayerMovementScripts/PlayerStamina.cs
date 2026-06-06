@@ -4,9 +4,9 @@ using UnityEngine.UI;
 public class PlayerStamina : MonoBehaviour
 {
     [Header("Stamina Settings")]
-    public float maxStamina = 100f;
-    public float sprintDrainRate = 15f; 
-    public float regenRate = 10f;
+    public float maxStamina = 150f;
+    public float sprintDrainRate = 10f; 
+    public float regenRate = 15f;
     public float regenDelay = 1.5f; // How long after stopping before it recharges
 
     private float currentStamina;
