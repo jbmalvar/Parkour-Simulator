@@ -59,4 +59,13 @@ public class PlayerMana : MonoBehaviour
         UpdateUI();
         return manaDrained;
     }
+
+    public void RestoreMana(float amount)
+    {
+        currentMana += amount;
+        currentMana = Mathf.Clamp(currentMana, 0, maxMana);
+        UpdateUI();
+        
+        Debug.Log($"Mana Restored by {amount}! Current Mana: {currentMana}");
+    }
 }

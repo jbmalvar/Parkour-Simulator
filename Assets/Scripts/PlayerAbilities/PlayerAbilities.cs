@@ -39,6 +39,11 @@ public class PlayerAbilities : MonoBehaviour
     public float regenDuration = 1.5f; // How fast to restore it
     private Coroutine regenRoutine;
 
+    [Header("Mana Burst Settings")]
+    public float manaBurstTotalAmount = 50f; // Total mana to restore
+    public float manaBurstDuration = 1.0f;   // How fast to restore it
+    private Coroutine manaBurstRoutine;
+
     private Coroutine currentAbilityRoutine;
     private Coroutine timeStopRoutine; 
 
@@ -183,5 +188,35 @@ public class PlayerAbilities : MonoBehaviour
         }
 
         Debug.Log("Quick Regen Finished.");
+    }
+
+    // ---> NEW: Trigger Mana Burst <---
+    public void TriggerManaBurst()
+    {
+        if (playerMana == null) return;
+
+        // Stop any current mana burst so they don't overlap and break the math
+        if (manaBurstRoutine != null) StopCoroutine(manaBurstRoutine);
+        manaBurstRoutine = StartCoroutine(PerformManaBurst());
+    }
+
+    // ---> NEW: Perform Mana Burst <---
+    private IEnumerator PerformManaBurst()
+    {
+        Debug.Log("Mana Burst Casted! Restoring mana...");
+        
+        // Break the total mana restoration into 10 rapid ticks for a smooth UI fill
+        int ticks = 10;
+        float manaPerTick = manaBurstTotalAmount / ticks;
+        float timeBetweenTicks = manaBurstDuration / ticks;
+
+        for (int i = 0; i < ticks; i++)
+        {
+            playerMana.RestoreMana(manaPerTick);
+            // Using Realtime so it works even if you cast it while time is stopped
+            yield return new WaitForSecondsRealtime(timeBetweenTicks); 
+        }
+
+        Debug.Log("Mana Burst Finished.");
     }
 }

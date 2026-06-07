@@ -116,6 +116,13 @@ public class GestureCaster : MonoBehaviour
                 if (playerAbilities != null) playerAbilities.TriggerQuickRegen();
                 return;
             }
+
+            // ---> NEW: Check for Triangle (Mana Burst) <---
+            if (result.Score > 0.9f && result.GestureClass == "regenmana")
+            {
+                if (playerAbilities != null) playerAbilities.TriggerManaBurst();
+                return;
+            }
         }
         else
         {
