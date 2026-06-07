@@ -123,6 +123,19 @@ public class GestureCaster : MonoBehaviour
                 if (playerAbilities != null) playerAbilities.TriggerManaBurst();
                 return;
             }
+
+            // ---> NEW: Check for V shape (Safe Fall) <---
+            if (result.Score > 0.75f && result.GestureClass == "nofall")
+            {
+                if (playerAbilities != null) playerAbilities.TriggerSafeFall();
+                return;
+            }
+
+            if (result.Score > 0.9f && result.GestureClass == "speed")
+            {
+                if (playerAbilities != null) playerAbilities.TriggerSpeedBoost();
+                return;
+            }
         }
         else
         {

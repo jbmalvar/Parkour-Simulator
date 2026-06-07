@@ -44,8 +44,21 @@ public class PlayerAbilities : MonoBehaviour
     public float manaBurstDuration = 1.0f;   // How fast to restore it
     private Coroutine manaBurstRoutine;
 
+    [Header("Safe Fall Settings")]
+    public float safeFallManaCost = 20f;
+    public float safeFallDuration = 8f; // How long you have to hit the ground
+    private Coroutine safeFallRoutine;
+
+    [Header("Speed Boost Settings")]
+    public float speedBoostManaCost = 30f;
+    public float speedBoostMultiplier = 2f; // Doubles your speed
+    public float speedBoostDuration = 6f;
+    private Coroutine speedBoostRoutine;
+
     private Coroutine currentAbilityRoutine;
     private Coroutine timeStopRoutine; 
+
+    public bool isTimeStopActive = false; // <--- NEW FLAG
 
     void Start()
     {
@@ -129,6 +142,8 @@ public class PlayerAbilities : MonoBehaviour
     private IEnumerator PerformTimeStop()
     {
         Debug.Log("ZA WARUDO! Time Stopped.");
+        isTimeStopActive = true; // <--- TURN FLAG ON
+
         float timer = 0f;
         float defaultFixedDelta = 0.02f; 
         
@@ -142,6 +157,7 @@ public class PlayerAbilities : MonoBehaviour
 
         Time.timeScale = 1f;
         Time.fixedDeltaTime = defaultFixedDelta;
+        isTimeStopActive = false; // <--- TURN FLAG OFF
         Debug.Log("Time resumed.");
     }
 
@@ -218,5 +234,66 @@ public class PlayerAbilities : MonoBehaviour
         }
 
         Debug.Log("Mana Burst Finished.");
+    }
+
+    // ---> NEW: Trigger Safe Fall <---
+    public void TriggerSafeFall()
+    {
+        if (playerMana != null && !playerMana.TryUseMana(safeFallManaCost)) return;
+        if (playerHealth == null) return;
+
+        if (safeFallRoutine != null) StopCoroutine(safeFallRoutine);
+        safeFallRoutine = StartCoroutine(PerformSafeFall());
+    }
+
+    // ---> NEW: Perform Safe Fall <---
+    private IEnumerator PerformSafeFall()
+    {
+        Debug.Log($"Safe Fall Active! Immune to fall damage for {safeFallDuration} seconds.");
+        
+        // Turn the shield ON
+        playerHealth.isFallDamageImmune = true;
+
+        float timer = 0f;
+        while (timer < safeFallDuration)
+        {
+            // Using unscaledDeltaTime so the buff duration doesn't break if you cast Time Stop!
+            timer += Time.unscaledDeltaTime; 
+            yield return null;
+        }
+
+        // Turn the shield OFF
+        playerHealth.isFallDamageImmune = false;
+        Debug.Log("Safe Fall has worn off!");
+    }
+
+    // ---> NEW: Trigger Speed Boost <---
+    public void TriggerSpeedBoost()
+    {
+        if (playerMana != null && !playerMana.TryUseMana(speedBoostManaCost)) return;
+
+        if (speedBoostRoutine != null) StopCoroutine(speedBoostRoutine);
+        speedBoostRoutine = StartCoroutine(PerformSpeedBoost());
+    }
+
+    // ---> NEW: Perform Speed Boost <---
+    private IEnumerator PerformSpeedBoost()
+    {
+        Debug.Log($"Speed Boost Active! Speed multiplied by {speedBoostMultiplier} for {speedBoostDuration} seconds.");
+        
+        // Turn the speed up
+        playerMovement.activeSpeedMultiplier = speedBoostMultiplier;
+
+        float timer = 0f;
+        while (timer < speedBoostDuration)
+        {
+            // Using unscaledDeltaTime so you stay fast even if Time Stop is active!
+            timer += Time.unscaledDeltaTime; 
+            yield return null;
+        }
+
+        // Return speed to normal
+        playerMovement.activeSpeedMultiplier = 1f;
+        Debug.Log("Speed Boost has worn off.");
     }
 }

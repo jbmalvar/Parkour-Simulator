@@ -7,6 +7,8 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     private CharacterController controller;
     private PlayerStamina playerStamina;
+
+    private PlayerAbilities playerAbilities;
     private float fallVelocity;
 
     [Header("Fall Damage Settings")]
@@ -66,6 +68,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 vaultTargetPosition; 
     private Vector3 vaultLedgeEdge;
 
+    [Header("Buffs")]
+    public float activeSpeedMultiplier = 1f; // ---> NEW: Defaults to 1 (normal speed)
+
     public Vector3 playerVelocity;
     private bool isGrounded;
     
@@ -91,6 +96,7 @@ public class PlayerMovement : MonoBehaviour
         originalCenter = controller.center;
 
         playerStamina = GetComponent<PlayerStamina>();
+        playerAbilities = GetComponent<PlayerAbilities>();
     }
 
     void Update()
@@ -158,7 +164,7 @@ public class PlayerMovement : MonoBehaviour
                 // ---> NEW: Send 999 damage to Health Script so it triggers the temporary restart! <---
                 if (GetComponent<PlayerHealth>() != null)
                 {
-                    GetComponent<PlayerHealth>().TakeDamage(999);
+                    GetComponent<PlayerHealth>().TakeFallDamage(999);
                 }
                 
                 playerVelocity = Vector3.zero; 
@@ -173,7 +179,7 @@ public class PlayerMovement : MonoBehaviour
                 
                 if (GetComponent<PlayerHealth>() != null)
                 {
-                    GetComponent<PlayerHealth>().TakeDamage(damageAmount);
+                    GetComponent<PlayerHealth>().TakeFallDamage(damageAmount);
                 }
             }
 
@@ -234,10 +240,10 @@ public class PlayerMovement : MonoBehaviour
                 if (!IsWallRunning)
                 {
                     HandleMovement();
-                    playerVelocity.y += gravity * Time.unscaledDeltaTime;
+                    playerVelocity.y += gravity * CurrentDeltaTime;
                 }
                 
-                controller.Move(playerVelocity * Time.unscaledDeltaTime);
+                controller.Move(playerVelocity * CurrentDeltaTime);
             }
         }
 
@@ -271,7 +277,7 @@ public class PlayerMovement : MonoBehaviour
             playerStamina.DrainStamina(); // Tell the bank to deduct energy
         }
 
-        controller.Move(move * targetSpeed * Time.unscaledDeltaTime);
+        controller.Move(move * (targetSpeed * activeSpeedMultiplier) * CurrentDeltaTime);
     }
 
     private bool CanStand()
@@ -324,7 +330,7 @@ public class PlayerMovement : MonoBehaviour
                 wallRunTimer = 0f;
             }
 
-            wallRunTimer += Time.unscaledDeltaTime;
+            wallRunTimer += CurrentDeltaTime;
 
             if (wallRunTimer < wallRunMaxDuration)
             {
@@ -341,8 +347,8 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 stickToWall = -wallNormal * 2f; 
                 
                 // 3. Move along the wall
-                Vector3 moveDirection = (wallForward * wallRunSpeed) + stickToWall;
-                controller.Move(moveDirection * Time.unscaledDeltaTime);
+                Vector3 moveDirection = (wallForward * (wallRunSpeed * activeSpeedMultiplier)) + stickToWall;
+                controller.Move(moveDirection * CurrentDeltaTime);
 
                 // 4. Apply custom gentle gravity (instead of falling like a rock)
                 playerVelocity.y = wallRunGravity;
@@ -418,7 +424,7 @@ public class PlayerMovement : MonoBehaviour
             if (!CheckWallClimb()) break;
 
             Vector3 climbMove = (Vector3.up * climbSpeed) + (transform.forward * 2f);
-            controller.Move(climbMove * Time.unscaledDeltaTime);
+            controller.Move(climbMove * CurrentDeltaTime);
 
             if (CheckLedgeDuringClimb())
             {
@@ -427,7 +433,7 @@ public class PlayerMovement : MonoBehaviour
                 yield break; 
             }
 
-            timer += Time.unscaledDeltaTime;
+            timer += CurrentDeltaTime;
             yield return null;
         }
 
@@ -448,7 +454,7 @@ public class PlayerMovement : MonoBehaviour
 
         while (percent < 1f)
         {
-            percent += Time.unscaledDeltaTime / duration;
+            percent += CurrentDeltaTime / duration;
             
             // 1. Go UP very quickly (finish upward movement at 50% of the vault)
             float upPercent = Mathf.Clamp01(percent * 2f);
@@ -539,15 +545,15 @@ public class PlayerMovement : MonoBehaviour
             Vector3 currentMove = slideDirection * slideSpeed;
             
             if (!controller.isGrounded) {
-                playerVelocity.y += gravity * Time.unscaledDeltaTime;
+                playerVelocity.y += gravity * CurrentDeltaTime;
             } else {
                 playerVelocity.y = -2f; 
             }
             
             currentMove.y = playerVelocity.y;
-            controller.Move(currentMove * Time.unscaledDeltaTime);
+            controller.Move(currentMove * CurrentDeltaTime);
 
-            timer += Time.unscaledDeltaTime;
+            timer += CurrentDeltaTime;
             yield return null;
         }
 
@@ -569,18 +575,33 @@ public class PlayerMovement : MonoBehaviour
             Vector3 currentMove = rollDirection * rollSpeed;
             
             if (!controller.isGrounded) {
-                playerVelocity.y += gravity * Time.unscaledDeltaTime;
+                playerVelocity.y += gravity * CurrentDeltaTime;
             } else {
                 playerVelocity.y = -2f; 
             }
             
             currentMove.y = playerVelocity.y;
-            controller.Move(currentMove * Time.unscaledDeltaTime);
+            controller.Move(currentMove * CurrentDeltaTime);
 
-            timer += Time.unscaledDeltaTime;
+            timer += CurrentDeltaTime;
             yield return null;
         }
 
         EndCurrentAction();
+    }
+
+    // ---> NEW: A smart property that gives you the right time based on the situation <---
+    private float CurrentDeltaTime
+    {
+        get
+        {
+            // If the spell is active, use unscaled time so the player moves normally.
+            // Otherwise, use regular time so the player slows down when drawing.
+            if (playerAbilities != null && playerAbilities.isTimeStopActive)
+            {
+                return CurrentDeltaTime;
+            }
+            return Time.deltaTime;
+        }
     }
 }

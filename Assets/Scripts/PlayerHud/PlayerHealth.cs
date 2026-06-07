@@ -22,6 +22,9 @@ public class PlayerHealth : MonoBehaviour
     public AudioClip hurtSound;     
     public AudioClip deathSound;    
 
+    [Header("Buffs")]
+    public bool isFallDamageImmune = false;
+
     void Awake()
     {
         this.enabled = true;
@@ -75,6 +78,19 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    // ---> NEW: Dedicated method for fall damage <---
+    public void TakeFallDamage(int damageAmount)
+    {
+        if (isFallDamageImmune)
+        {
+            Debug.Log("Safe Fall absorbed the impact! 0 damage taken.");
+            return; // Exit out before applying any damage
+        }
+        
+        // If the spell is NOT active, take damage normally
+        TakeDamage(damageAmount);
+    }
+
     public void TakeDamage(int damageAmount)
     {
         currentHealth -= damageAmount;
@@ -100,6 +116,8 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+
+        
     }
 
     private void Die()
