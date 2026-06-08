@@ -5,16 +5,21 @@ public class LevelTransition : MonoBehaviour
 {
     [Tooltip("Type the exact name of the next level/scene here in the Inspector")]
     public string nextLevelName;
+    public SpeedrunTimer levelTimer; 
+    private bool hasFinished = false;
 
-    // This function is called whenever another object enters this object's trigger collider
     private void OnTriggerEnter(Collider other)
     {
-        // Check if the object that touched the trigger has the "Player" tag
+     
         if (other.CompareTag("Player"))
         {
-            // Load the next level
-            Debug.Log("Player touched the portal! Loading level: " + nextLevelName);
+            // Send to DB with name and Time
+            hasFinished = true;
+            float finalTime = levelTimer.StopTimer();
+            string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
+            LeaderboardManager.Instance.SubmitScore(1, player, finalTime);
             SceneManager.LoadScene(nextLevelName);
+            // Debug.Log("Player touched the portal! Loading level: " + nextLevelName);
         }
     }
 }
