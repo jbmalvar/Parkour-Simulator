@@ -591,16 +591,20 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ---> NEW: A smart property that gives you the right time based on the situation <---
+    // ---> FIXED: Smart Delta Time <---
     private float CurrentDeltaTime
     {
         get
         {
-            // If the spell is active, use unscaled time so the player moves normally.
-            // Otherwise, use regular time so the player slows down when drawing.
+            // 1. Is the Za Warudo spell active? 
             if (playerAbilities != null && playerAbilities.isTimeStopActive)
             {
-                return CurrentDeltaTime;
+                // YES: Give the player real-world time so they are immune to the freeze
+                return Time.unscaledDeltaTime; 
             }
+            
+            // 2. Otherwise (Normal gameplay OR Right-Click slow-mo)
+            // Give the player game-time so they slow down with the rest of the world!
             return Time.deltaTime;
         }
     }
