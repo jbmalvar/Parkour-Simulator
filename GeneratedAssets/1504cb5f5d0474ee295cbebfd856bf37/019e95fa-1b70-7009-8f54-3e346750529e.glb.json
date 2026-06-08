@@ -1,0 +1,23 @@
+{
+    "asset": "1504cb5f5d0474ee295cbebfd856bf37",
+    "fileName": "019e95fa-1b70-7009-8f54-3e346750529e.glb",
+    "prompt": "a stylized small stone tower with a wooden roof, snow-covered, hand-painted texture, fantasy game asset style",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "7a3e9294c291f4d8f909e1a522ed5616",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

@@ -1,0 +1,23 @@
+{
+    "asset": "10d9213da7f1f43538a00a3614baad77",
+    "fileName": "019e95ec-0595-7ca4-9c3e-c30aacb2e88b.glb",
+    "prompt": "a sharp icicle cone shape",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "3db72f0e405294d31bc2d3e720d03c66",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

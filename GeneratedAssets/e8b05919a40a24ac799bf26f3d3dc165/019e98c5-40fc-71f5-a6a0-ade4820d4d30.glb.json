@@ -1,0 +1,23 @@
+{
+    "asset": "e8b05919a40a24ac799bf26f3d3dc165",
+    "fileName": "019e98c5-40fc-71f5-a6a0-ade4820d4d30.glb",
+    "prompt": "a stylized snowman with three snowballs, coal eyes, carrot nose, and a black top hat, hand-painted texture",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "0416834195b73427292d6287878d367d",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

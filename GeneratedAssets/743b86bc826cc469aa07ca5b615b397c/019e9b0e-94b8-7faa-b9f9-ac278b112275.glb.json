@@ -1,0 +1,23 @@
+{
+    "asset": "743b86bc826cc469aa07ca5b615b397c",
+    "fileName": "019e9b0e-94b8-7faa-b9f9-ac278b112275.glb",
+    "prompt": "a stylized low-poly fantasy wooden crate with snow on top, hand-painted texture",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "ca5e83d0631d84ab2bc8895a3e446a54",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

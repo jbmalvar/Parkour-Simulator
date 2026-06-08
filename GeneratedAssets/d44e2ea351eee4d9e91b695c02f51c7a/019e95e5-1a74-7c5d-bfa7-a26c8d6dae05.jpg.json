@@ -1,0 +1,28 @@
+{
+    "asset": "d44e2ea351eee4d9e91b695c02f51c7a",
+    "fileName": "019e95e5-1a74-7c5d-bfa7-a26c8d6dae05.jpg",
+    "prompt": "a single classic snowman with three snowballs, coal eyes, carrot nose, and a black top hat, cute stylized look, white background, isolated game asset",
+    "negativePrompt": "",
+    "model": "flux-2-pro",
+    "modelName": "Flux 2 (Pro)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

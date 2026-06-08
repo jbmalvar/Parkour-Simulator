@@ -1,0 +1,23 @@
+{
+    "asset": "2c033ffe124f145d8bff902d84acb89c",
+    "fileName": "019e98cb-b27d-7e32-a5dd-373ef6137c33.glb",
+    "prompt": "stylized sharp icicle",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "207bac36d86c946cc9ed48fc3ecfa0ff",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

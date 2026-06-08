@@ -1,0 +1,38 @@
+{
+    "asset": "207bac36d86c946cc9ed48fc3ecfa0ff",
+    "fileName": "019e98c9-8f94-7a2a-8204-839689849c9e.png",
+    "prompt": "A single sharp conical stylized icicle, sharp point, hand-painted ice texture, semi-transparent blue highlights, isolated on white background, game asset style. Consistent with the reference image 171276.",
+    "negativePrompt": "",
+    "model": "gpt-image-1",
+    "modelName": "GPT Image 1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "efccf7950f5b74a269f1dca8b381fe33",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

@@ -1,0 +1,23 @@
+{
+    "asset": "0159a6d93910c4123a774e1fcc413760",
+    "fileName": "019e9b0c-81d5-7a9f-a54c-045a992a2781.glb",
+    "prompt": "a stylized low-poly fantasy house with a thick layer of snow on its roof, hand-painted texture, matching RPG Poly Pack style",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "1b27df8ec08bc4fddadf2dab07e59c22",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

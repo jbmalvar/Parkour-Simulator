@@ -1,0 +1,23 @@
+{
+    "asset": "0bbc3143f8c3d4f72ab30a1e15545f90",
+    "fileName": "019e9b05-5073-7d80-b75a-4a706936a4aa.glb",
+    "prompt": "a stylized low-poly fantasy wooden shack with a thick layer of snow on its roof, hand-painted texture, matching RPG Poly Pack style",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "5b3105a6220924227884cac4d56b8dcd",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

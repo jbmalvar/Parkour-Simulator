@@ -1,0 +1,28 @@
+{
+    "asset": "3db72f0e405294d31bc2d3e720d03c66",
+    "fileName": "019e95e5-0b19-7d1b-9ca4-8225e00c0356.jpg",
+    "prompt": "a single sharp pointy icicle, realistic ice texture, semi-transparent blue tint, white background, isolated game asset",
+    "negativePrompt": "",
+    "model": "flux-2-pro",
+    "modelName": "Flux 2 (Pro)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

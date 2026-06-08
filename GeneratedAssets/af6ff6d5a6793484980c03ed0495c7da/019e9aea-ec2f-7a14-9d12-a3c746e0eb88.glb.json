@@ -1,0 +1,23 @@
+{
+    "asset": "af6ff6d5a6793484980c03ed0495c7da",
+    "fileName": "019e9aea-ec2f-7a14-9d12-a3c746e0eb88.glb",
+    "prompt": "a stylized fantasy snow-covered wooden cabin, hand-painted texture, matching reference image style",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "f06a094b51cfd4f509856f69d597e5b1",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

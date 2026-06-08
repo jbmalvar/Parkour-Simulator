@@ -1,0 +1,23 @@
+{
+    "asset": "68d88b435cbe94e5383ffdcc4e4f4d45",
+    "fileName": "019e98c5-514d-7daa-89e5-75369803e2f0.glb",
+    "prompt": "a stylized stone tower with a snow-covered wooden roof, hand-painted texture, matching reference image style",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "42017587cbf6d4ea9830cc2b644064e1",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

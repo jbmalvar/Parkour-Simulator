@@ -1,0 +1,23 @@
+{
+    "asset": "adb3ecede35784608ac9644dc5a76cf6",
+    "fileName": "019e98cb-f984-7d7c-a88a-1a34ef902400.glb",
+    "prompt": "stylized stone tower with snow roof",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "9f5376c2439df47b7bba36735d5ee444",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

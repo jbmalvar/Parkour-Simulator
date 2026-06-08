@@ -1,0 +1,23 @@
+{
+    "asset": "ad1e8889b3dd447bfa9ca1543bc7ab29",
+    "fileName": "019e9b77-d8d3-7464-836c-35d73542768b.glb",
+    "prompt": "A massive, scary Yeti monster, muscular, white fur, running on all 4s, aggressive pose, matching the reference image.",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "cefb055e8d430410d8100c6a164a3d0f",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}
