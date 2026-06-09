@@ -41609,7 +41609,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelTransition
   nextLevelName: MainMenu
   levelTimer: {fileID: 0}
-  LevelNumber: 0
+  LevelNumber: 4
   winText: {fileID: 1855569803}
 --- !u!65 &1295517487
 BoxCollider:

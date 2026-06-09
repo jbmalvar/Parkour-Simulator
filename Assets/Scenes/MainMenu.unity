@@ -4983,7 +4983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55775ac87a773324e8dbc877bd8dac66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LeaderboardManager
-  baseServerUrl: mage-parkour.viewdns.net
+  baseServerUrl: https://mage-parkour.viewdns.net/api/scores
 --- !u!4 &1391231657
 Transform:
   m_ObjectHideFlags: 0
