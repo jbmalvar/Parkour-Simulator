@@ -15920,6 +15920,14 @@ PrefabInstance:
       propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3364586995901479222, guid: 98712dae2414ea947827cf50a6be8d2c, type: 3}
+      propertyPath: fatalFallSpeed
+      value: -22
+      objectReference: {fileID: 0}
+    - target: {fileID: 3364586995901479222, guid: 98712dae2414ea947827cf50a6be8d2c, type: 3}
+      propertyPath: maxRollSurvivalSpeed
+      value: -28
+      objectReference: {fileID: 0}
     - target: {fileID: 4275312700282111145, guid: 98712dae2414ea947827cf50a6be8d2c, type: 3}
       propertyPath: m_Name
       value: Player
