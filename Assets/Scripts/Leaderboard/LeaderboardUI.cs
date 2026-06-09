@@ -5,21 +5,24 @@ public class LeaderboardUI : MonoBehaviour
 {
     [Header("Leaderboard Elements")]
     public Transform entriesContainer;
-    public GameObject scoreEntryPrefab; 
+    // public GameObject scoreEntryPrefab; 
+    public TextMeshProUGUI[] scoreTextSlots;
     public TextMeshProUGUI levelTitleText;
 
     private int currentDisplayLevel = 1; 
 
-    // This automatically runs when MenuManager activates this panel
-    void OnEnable() 
-    {
-        LoadLevelData(currentDisplayLevel);
-    }
+    // void OnEnable() 
+    // {
+    //     LoadLevelData(currentDisplayLevel);
+    // }
 
     public void NextLevel()
     {
-        currentDisplayLevel++;
-        LoadLevelData(currentDisplayLevel);
+        if (currentDisplayLevel < 5)
+        {
+            currentDisplayLevel++;
+            LoadLevelData(currentDisplayLevel);
+        }
     }
 
     public void PreviousLevel()
@@ -34,10 +37,9 @@ public class LeaderboardUI : MonoBehaviour
     private void LoadLevelData(int level)
     {
         levelTitleText.text = $"Loading Level {level}...";
-        
-        foreach (Transform child in entriesContainer)
+        foreach (var textSlot in scoreTextSlots)
         {
-            Destroy(child.gameObject);
+            textSlot.text = "---";
         }
 
         LeaderboardManager.Instance.FetchLeaderboard(level, OnScoresReceived);
@@ -46,19 +48,24 @@ public class LeaderboardUI : MonoBehaviour
     private void OnScoresReceived(ScoreData[] scores)
     {
         levelTitleText.text = $"Level {currentDisplayLevel} Top Times";
-    
+
         if (scores == null || scores.Length == 0)
         {
-            GameObject noDataObj = Instantiate(scoreEntryPrefab, entriesContainer);
-            noDataObj.GetComponent<TextMeshProUGUI>().text = "No times recorded yet!";
+            scoreTextSlots[0].text = "No times recorded yet!";
             return;
         }
 
-        for (int i = 0; i < scores.Length; i++)
+        // Loop through our slots and the database scores at the same time
+        for (int i = 0; i < scoreTextSlots.Length; i++)
         {
-            GameObject entryObj = Instantiate(scoreEntryPrefab, entriesContainer);
-            TextMeshProUGUI textMesh = entryObj.GetComponent<TextMeshProUGUI>();
-            textMesh.text = $"{i + 1}. {scores[i].playerName} - {scores[i].timeSpent:F2}s";
+            if (i < scores.Length) 
+            {
+                scoreTextSlots[i].text = $"{i + 1}. {scores[i].playerName} - {scores[i].timeSpent:F2}s";
+            }
+            else 
+            {
+                scoreTextSlots[i].text = $"{i + 1}. ---"; 
+            }
         }
     }
 }

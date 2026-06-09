@@ -30,20 +30,20 @@ public static class UISetupTool
         GameObject landing = GetPanel(canvas, "LandingPanel");
         GameObject select  = GetPanel(canvas, "LevelSelectPanel");
         GameObject about    = GetPanel(canvas, "AboutPanel");
-        GameObject settings = GetPanel(canvas, "SettingsPanel");
+        GameObject Name = GetPanel(canvas, "NamePanel");
         GameObject confirm  = GetPanel(canvas, "LevelConfirmPanel");
 
         BuildLanding(landing);
         BuildLevelSelect(select);
         BuildAbout(about);
-        BuildSettings(settings);
+        // BuildSettings(settings);
         TextMeshProUGUI confirmName = BuildLevelConfirm(confirm);
 
         // Assign MenuManager references
         mm.landingPanel = landing;
         mm.levelSelectPanel = select;
         mm.aboutPanel = about;
-        mm.settingsPanel = settings;
+        // mm.namePanel = name
         mm.levelConfirmPanel = confirm;
         mm.confirmLevelNameText = confirmName;
         EditorUtility.SetDirty(mm);
@@ -52,7 +52,7 @@ public static class UISetupTool
         landing.SetActive(true);
         select.SetActive(false);
         about.SetActive(false);
-        settings.SetActive(false);
+        Name.SetActive(false);
         confirm.SetActive(false);
 
         Debug.Log("✓ Menu built, wired, and styled. Hit Play — no manual wiring needed.");

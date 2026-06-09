@@ -20538,51 +20538,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4781277628412113339, guid: 312f50c94813441f6a8d5eda559789c4, type: 3}
---- !u!1 &1062038353
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1062038355}
-  - component: {fileID: 1062038356}
-  m_Layer: 0
-  m_Name: LeaderboardNetwork (delete when done testing)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1062038355
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1062038353}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -14.07751, y: -0, z: 127.00249}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1062038356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1062038353}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55775ac87a773324e8dbc877bd8dac66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LeaderboardManager
-  baseServerUrl: https://mage-parkour.viewdns.net/api/scores
 --- !u!1001 &1062588138
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22664,9 +22619,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59b6430770e69f041b45ddb76fb5a8d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelTransition
-  nextLevelName: Map
-  levelTimer: {fileID: 0}
-  LevelNumber: 0
+  nextLevelName: SnowyWonderland
+  levelTimer: {fileID: 70317090}
+  LevelNumber: 1
+  winText: {fileID: 0}
 --- !u!1 &1182647208 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2423c10e0e16c47f58069e412227d325, type: 3}
@@ -39739,4 +39695,3 @@ SceneRoots:
   - {fileID: 822623347}
   - {fileID: 1506024917}
   - {fileID: 1494858941}
-  - {fileID: 1062038355}
