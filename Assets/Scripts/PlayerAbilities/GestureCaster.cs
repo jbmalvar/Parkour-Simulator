@@ -5,6 +5,7 @@ using PDollarGestureRecognizer; // Required for PDollar
 using System.IO;                // Required for file loading
 
 [RequireComponent(typeof(LineRenderer))]
+[RequireComponent(typeof(AudioSource))] // Added to ensure an AudioSource is always attached
 public class GestureCaster : MonoBehaviour
 {
     [Header("References")]
@@ -18,22 +19,37 @@ public class GestureCaster : MonoBehaviour
     public float minDistanceBetweenPoints = 5f; 
     public float drawDistance = 2f; 
 
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    [Tooltip("Sound played when an invalid drawing or nothing is recognized.")]
+    public AudioClip failSound;
+    public AudioClip timeStopSound;
+    public AudioClip infiniteStaminaSound;
+    public AudioClip healCrossSound;
+    public AudioClip manaBurstSound;
+    public AudioClip safeFallSound;
+    public AudioClip speedBoostSound;
+    public AudioClip dashSound;
+    public AudioClip jumpSound;
+
     private LineRenderer lineRenderer;
     private List<Vector2> screenPoints = new List<Vector2>();
 
-    // NEW: List to hold our loaded PDollar gestures
+    // List to hold our loaded PDollar gestures
     private List<Gesture> trainingSet = new List<Gesture>();
 
     void Start()
     {
-        // I left your debug log here just in case you ever need to find the folder again!
         Debug.Log("My hidden folder is: " + Application.persistentDataPath);
         
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 0; 
         if (mainCamera == null) mainCamera = Camera.main;
 
-        // NEW: Load all the .xml gesture files from your Assets/Resources/GestureSet folder
+        // Auto-grab the AudioSource if it wasn't assigned in the inspector
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+
+        // Load all the .xml gesture files from your Assets/Resources/GestureSet folder
         TextAsset[] gestureFiles = Resources.LoadAll<TextAsset>("GestureSet");
         foreach (TextAsset file in gestureFiles)
         {
@@ -82,7 +98,12 @@ public class GestureCaster : MonoBehaviour
 
         if (cameraLookScript != null) cameraLookScript.enabled = true;
 
-        if (screenPoints.Count < 5) return; 
+        // If the drawing was too short, play fail sound and exit
+        if (screenPoints.Count < 5) 
+        {
+            PlayCastSound(failSound);
+            return; 
+        }
 
         // --- 1. PDollar Shape Recognition ---
         Point[] pointArray = new Point[screenPoints.Count];
@@ -100,40 +121,64 @@ public class GestureCaster : MonoBehaviour
             // Check for Hourglass (Time Stop)
             if (result.Score > 0.8f && result.GestureClass == "Hourglass")
             {
-                if (playerAbilities != null) playerAbilities.TriggerTimeStop();
+                if (playerAbilities != null) 
+                {
+                    playerAbilities.TriggerTimeStop();
+                    PlayCastSound(timeStopSound);
+                }
                 return; 
             }
 
-            // ---> NEW: Check for Circle (Infinite Stamina) <---
+            // Check for Circle (Infinite Stamina)
             if (result.Score > 0.9f && result.GestureClass == "infinitestam")
             {
-                if (playerAbilities != null) playerAbilities.TriggerInfiniteStamina();
+                if (playerAbilities != null)
+                {
+                    playerAbilities.TriggerInfiniteStamina();
+                    PlayCastSound(infiniteStaminaSound);
+                }
                 return;
             }
 
             if (result.Score > 0.9f && result.GestureClass == "HealCross")
             {
-                if (playerAbilities != null) playerAbilities.TriggerQuickRegen();
+                if (playerAbilities != null)
+                {
+                    playerAbilities.TriggerQuickRegen();
+                    PlayCastSound(healCrossSound);
+                }
                 return;
             }
 
-            // ---> NEW: Check for Triangle (Mana Burst) <---
+            // Check for Triangle (Mana Burst)
             if (result.Score > 0.9f && result.GestureClass == "regenmana")
             {
-                if (playerAbilities != null) playerAbilities.TriggerManaBurst();
+                if (playerAbilities != null)
+                {
+                    playerAbilities.TriggerManaBurst();
+                    PlayCastSound(manaBurstSound);
+                }
                 return;
             }
 
-            // ---> NEW: Check for V shape (Safe Fall) <---
+            // Check for V shape (Safe Fall)
             if (result.Score > 0.75f && result.GestureClass == "nofall")
             {
-                if (playerAbilities != null) playerAbilities.TriggerSafeFall();
+                if (playerAbilities != null)
+                {
+                    playerAbilities.TriggerSafeFall();
+                    PlayCastSound(safeFallSound);
+                }
                 return;
             }
 
             if (result.Score > 0.9f && result.GestureClass == "speed")
             {
-                if (playerAbilities != null) playerAbilities.TriggerSpeedBoost();
+                if (playerAbilities != null)
+                {
+                    playerAbilities.TriggerSpeedBoost();
+                    PlayCastSound(speedBoostSound);
+                }
                 return;
             }
         }
@@ -147,15 +192,38 @@ public class GestureCaster : MonoBehaviour
         Vector2 endPoint = screenPoints[screenPoints.Count - 1];
         Vector2 swipeVector = endPoint - startPoint;
         
-        if (swipeVector.magnitude < 100f) return;
+        if (swipeVector.magnitude < 100f) 
+        {
+            // Swipe was too short, count as a fail
+            PlayCastSound(failSound);
+            return;
+        }
 
         if (Mathf.Abs(swipeVector.x) > Mathf.Abs(swipeVector.y))
         {
-            if (playerAbilities != null) playerAbilities.TriggerGenjiDash();
+            if (playerAbilities != null) 
+            {
+                playerAbilities.TriggerGenjiDash();
+                PlayCastSound(dashSound);
+            }
         }
         else
         {
-            if (playerAbilities != null) playerAbilities.TriggerSuperJump();
+            if (playerAbilities != null) 
+            {
+                playerAbilities.TriggerSuperJump();
+                PlayCastSound(jumpSound);
+            }
+        }
+    }
+
+    // Helper method to keep code clean and prevent null reference errors with audio
+    private void PlayCastSound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            // PlayOneShot allows multiple sounds to overlap if cast quickly
+            audioSource.PlayOneShot(clip);
         }
     }
 }

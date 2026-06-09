@@ -23,7 +23,7 @@ public class PlayerAbilities : MonoBehaviour
     public float superJumpMultiplier = 3f;
 
     [Header("Time Stop Settings")]
-    public float timeStopDuration = 5f;
+    public float timeStopDuration = 7f;
     [Tooltip("How slow time goes. 0.05f is basically frozen but looks cooler than a hard 0.")]
     public float timeScaleDuringStop = 0.05f; 
 
