@@ -2,39 +2,40 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class LevelTransition : MonoBehaviour
+public class WinTrigger : MonoBehaviour
 {
+    public TextMeshProUGUI winText;
     public string nextLevelName;
     public SpeedrunTimer levelTimer;
     public int LevelNumber;
-    public TextMeshProUGUI winText; // drag WinText here
     private bool hasFinished = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !hasFinished)
         {
             hasFinished = true;
+
             if (winText != null)
                 winText.gameObject.SetActive(true);
 
-            if (LevelNumber > 0)
+            if (LevelNumber > 0 && levelTimer != null)
             {
                 float finalTime = levelTimer.StopTimer();
                 string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
-                print("reached");
-                LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
+                // TODO: save finalTime + player to leaderboard
             }
 
-            Invoke("LoadNextScene", 3f); // wait 3 seconds then load
+            MenuManager.UnlockNextLevel(LevelNumber);
+            Invoke("LoadNextScene", 3f);
         }
     }
 
-    void LoadNextScene()
+    private void LoadNextScene()
     {
-        if (nextLevelName != "")
+        if (!string.IsNullOrEmpty(nextLevelName))
             SceneManager.LoadScene(nextLevelName);
-            // Debug.Log("Player touched the portal! Loading level: " + nextLevelName);
-        }
+        else
+            Debug.LogWarning("WinTrigger: nextLevelName is not set!");
     }
 }
