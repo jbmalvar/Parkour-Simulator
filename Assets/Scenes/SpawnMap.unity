@@ -22664,9 +22664,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59b6430770e69f041b45ddb76fb5a8d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelTransition
-  nextLevelName: Map
-  levelTimer: {fileID: 0}
-  LevelNumber: 0
+  nextLevelName: SnowyWonderland
+  levelTimer: {fileID: 70317090}
+  LevelNumber: 1
 --- !u!1 &1182647208 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2423c10e0e16c47f58069e412227d325, type: 3}

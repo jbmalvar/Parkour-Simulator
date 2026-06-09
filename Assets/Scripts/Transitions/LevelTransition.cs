@@ -1,29 +1,39 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class LevelTransition : MonoBehaviour
 {
-    [Tooltip("Type the exact name of the next level/scene here in the Inspector")]
     public string nextLevelName;
     public SpeedrunTimer levelTimer;
     public int LevelNumber;
+    public TextMeshProUGUI winText;
     private bool hasFinished = false;
 
     private void OnTriggerEnter(Collider other)
     {
-     
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !hasFinished)
         {
-            // Send to DB with name and Time
             hasFinished = true;
-            if (LevelNumber > 0) {
+
+            if (winText != null)
+                winText.gameObject.SetActive(true);
+
+            if (LevelNumber > 0)
+            {
                 float finalTime = levelTimer.StopTimer();
                 string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
                 LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
             }
+
             MenuManager.UnlockNextLevel(LevelNumber);
-            SceneManager.LoadScene(nextLevelName);
-            // Debug.Log("Player touched the portal! Loading level: " + nextLevelName);
+            Invoke("LoadNextScene", 3f); // wait 3 seconds then load
         }
+    }
+
+    void LoadNextScene()
+    {
+        if (nextLevelName != "")
+            SceneManager.LoadScene(nextLevelName);
     }
 }
