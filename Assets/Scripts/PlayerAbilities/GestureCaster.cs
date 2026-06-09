@@ -31,6 +31,7 @@ public class GestureCaster : MonoBehaviour
     public AudioClip speedBoostSound;
     public AudioClip dashSound;
     public AudioClip jumpSound;
+    public AudioClip lightSpellSound;
 
     private LineRenderer lineRenderer;
     private List<Vector2> screenPoints = new List<Vector2>();
@@ -163,6 +164,16 @@ public class GestureCaster : MonoBehaviour
                 if (playerAbilities != null && playerAbilities.TriggerSpeedBoost())
                 {
                     PlayCastSound(speedBoostSound);
+                }
+                return;
+            }
+
+            // Check for the Light / Night Vision gesture
+            if (result.Score > 0.9f && result.GestureClass == "light")
+            {
+                if (playerAbilities != null && playerAbilities.TriggerNightLight())
+                {
+                    PlayCastSound(lightSpellSound);
                 }
                 return;
             }
