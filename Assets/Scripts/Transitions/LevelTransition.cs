@@ -21,6 +21,7 @@ public class LevelTransition : MonoBehaviour
                 string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
                 LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
             }
+            MenuManager.UnlockNextLevel(LevelNumber);
             SceneManager.LoadScene(nextLevelName);
             // Debug.Log("Player touched the portal! Loading level: " + nextLevelName);
         }
