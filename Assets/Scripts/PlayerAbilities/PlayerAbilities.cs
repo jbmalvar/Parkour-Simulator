@@ -54,6 +54,15 @@ public class PlayerAbilities : MonoBehaviour
     public float speedBoostDuration = 6f;
     private Coroutine speedBoostRoutine;
 
+    [Header("Night Light Settings")]
+    public float lightManaCost = 15f;
+    public float lightDuration = 10f; 
+    [Tooltip("Color of the magic light or night vision.")]
+    public Color lightColor = new Color(0.8f, 1f, 0.8f); 
+    public float lightIntensity = 5f;
+    public float lightRange = 20f;
+    private Coroutine lightRoutine;
+    private GameObject activeLight;
     private Coroutine currentAbilityRoutine;
     private Coroutine timeStopRoutine; 
 
@@ -292,5 +301,49 @@ public class PlayerAbilities : MonoBehaviour
 
         playerMovement.activeSpeedMultiplier = 1f;
         Debug.Log("Speed Boost has worn off.");
+    }
+
+
+    public bool TriggerNightLight()
+    {
+        if (playerMana != null && !playerMana.TryUseMana(lightManaCost)) return false;
+
+        if (lightRoutine != null) StopCoroutine(lightRoutine);
+        lightRoutine = StartCoroutine(PerformNightLight());
+        
+        return true;
+    }
+
+    private IEnumerator PerformNightLight()
+    {
+        Debug.Log($"Night Light Casted! Illuminating area for {lightDuration} seconds.");
+
+        // Create the light if it doesn't exist yet
+        if (activeLight == null)
+        {
+            activeLight = new GameObject("PlayerMagicalLight");
+            
+            // Parent it to the main camera so it follows where the player looks
+            activeLight.transform.SetParent(Camera.main.transform);
+            activeLight.transform.localPosition = Vector3.zero;
+
+            Light lightComponent = activeLight.AddComponent<Light>();
+            lightComponent.type = LightType.Point; // Change to LightType.Spot for a flashlight effect
+            lightComponent.color = lightColor;
+            lightComponent.intensity = lightIntensity;
+            lightComponent.range = lightRange;
+        }
+
+        activeLight.SetActive(true);
+
+        float timer = 0f;
+        while (timer < lightDuration)
+        {
+            timer += Time.unscaledDeltaTime; 
+            yield return null;
+        }
+
+        activeLight.SetActive(false);
+        Debug.Log("Night Light has faded.");
     }
 }
