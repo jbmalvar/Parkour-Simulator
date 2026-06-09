@@ -11,7 +11,7 @@ public class ParkourCamera : MonoBehaviour
     [Header("Look Settings")]
     public float mouseSensitivity = 0.2f; 
     public float maxLookUp = 85f;
-    public float maxLookDown = 10f; 
+    public float maxLookDown = 40f; 
 
     [Header("Stabilization")]
     public Vector3 headOffset = new Vector3(0, 0.05f, 0.15f);

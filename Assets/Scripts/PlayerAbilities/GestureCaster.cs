@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using PDollarGestureRecognizer; // Required for PDollar
-using System.IO;                // Required for file loading
+using PDollarGestureRecognizer; 
+using System.IO;                
 
 [RequireComponent(typeof(LineRenderer))]
-[RequireComponent(typeof(AudioSource))] // Added to ensure an AudioSource is always attached
+[RequireComponent(typeof(AudioSource))] 
 public class GestureCaster : MonoBehaviour
 {
     [Header("References")]
@@ -34,8 +34,6 @@ public class GestureCaster : MonoBehaviour
 
     private LineRenderer lineRenderer;
     private List<Vector2> screenPoints = new List<Vector2>();
-
-    // List to hold our loaded PDollar gestures
     private List<Gesture> trainingSet = new List<Gesture>();
 
     void Start()
@@ -46,10 +44,8 @@ public class GestureCaster : MonoBehaviour
         lineRenderer.positionCount = 0; 
         if (mainCamera == null) mainCamera = Camera.main;
 
-        // Auto-grab the AudioSource if it wasn't assigned in the inspector
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
 
-        // Load all the .xml gesture files from your Assets/Resources/GestureSet folder
         TextAsset[] gestureFiles = Resources.LoadAll<TextAsset>("GestureSet");
         foreach (TextAsset file in gestureFiles)
         {
@@ -98,14 +94,12 @@ public class GestureCaster : MonoBehaviour
 
         if (cameraLookScript != null) cameraLookScript.enabled = true;
 
-        // If the drawing was too short, play fail sound and exit
         if (screenPoints.Count < 5) 
         {
             PlayCastSound(failSound);
             return; 
         }
 
-        // --- 1. PDollar Shape Recognition ---
         Point[] pointArray = new Point[screenPoints.Count];
         for (int i = 0; i < screenPoints.Count; i++)
         {
@@ -118,23 +112,20 @@ public class GestureCaster : MonoBehaviour
         {
             Result result = PointCloudRecognizer.Classify(playerDrawing, trainingSet.ToArray());
 
-            // Check for Hourglass (Time Stop)
+            // ---> UPDATED: All checks now expect PlayerAbilities to return true if successful <---
             if (result.Score > 0.8f && result.GestureClass == "Hourglass")
             {
-                if (playerAbilities != null) 
+                if (playerAbilities != null && playerAbilities.TriggerTimeStop()) 
                 {
-                    playerAbilities.TriggerTimeStop();
                     PlayCastSound(timeStopSound);
                 }
                 return; 
             }
 
-            // Check for Circle (Infinite Stamina)
             if (result.Score > 0.9f && result.GestureClass == "infinitestam")
             {
-                if (playerAbilities != null)
+                if (playerAbilities != null && playerAbilities.TriggerInfiniteStamina())
                 {
-                    playerAbilities.TriggerInfiniteStamina();
                     PlayCastSound(infiniteStaminaSound);
                 }
                 return;
@@ -142,31 +133,26 @@ public class GestureCaster : MonoBehaviour
 
             if (result.Score > 0.9f && result.GestureClass == "HealCross")
             {
-                if (playerAbilities != null)
+                if (playerAbilities != null && playerAbilities.TriggerQuickRegen())
                 {
-                    playerAbilities.TriggerQuickRegen();
                     PlayCastSound(healCrossSound);
                 }
                 return;
             }
 
-            // Check for Triangle (Mana Burst)
             if (result.Score > 0.9f && result.GestureClass == "regenmana")
             {
-                if (playerAbilities != null)
+                if (playerAbilities != null && playerAbilities.TriggerManaBurst())
                 {
-                    playerAbilities.TriggerManaBurst();
                     PlayCastSound(manaBurstSound);
                 }
                 return;
             }
 
-            // Check for V shape (Safe Fall)
             if (result.Score > 0.75f && result.GestureClass == "nofall")
             {
-                if (playerAbilities != null)
+                if (playerAbilities != null && playerAbilities.TriggerSafeFall())
                 {
-                    playerAbilities.TriggerSafeFall();
                     PlayCastSound(safeFallSound);
                 }
                 return;
@@ -174,9 +160,8 @@ public class GestureCaster : MonoBehaviour
 
             if (result.Score > 0.9f && result.GestureClass == "speed")
             {
-                if (playerAbilities != null)
+                if (playerAbilities != null && playerAbilities.TriggerSpeedBoost())
                 {
-                    playerAbilities.TriggerSpeedBoost();
                     PlayCastSound(speedBoostSound);
                 }
                 return;
@@ -194,35 +179,30 @@ public class GestureCaster : MonoBehaviour
         
         if (swipeVector.magnitude < 100f) 
         {
-            // Swipe was too short, count as a fail
             PlayCastSound(failSound);
             return;
         }
 
         if (Mathf.Abs(swipeVector.x) > Mathf.Abs(swipeVector.y))
         {
-            if (playerAbilities != null) 
+            if (playerAbilities != null && playerAbilities.TriggerGenjiDash()) 
             {
-                playerAbilities.TriggerGenjiDash();
                 PlayCastSound(dashSound);
             }
         }
         else
         {
-            if (playerAbilities != null) 
+            if (playerAbilities != null && playerAbilities.TriggerSuperJump()) 
             {
-                playerAbilities.TriggerSuperJump();
                 PlayCastSound(jumpSound);
             }
         }
     }
 
-    // Helper method to keep code clean and prevent null reference errors with audio
     private void PlayCastSound(AudioClip clip)
     {
         if (audioSource != null && clip != null)
         {
-            // PlayOneShot allows multiple sounds to overlap if cast quickly
             audioSource.PlayOneShot(clip);
         }
     }

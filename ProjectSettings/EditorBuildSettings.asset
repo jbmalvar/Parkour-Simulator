@@ -12,14 +12,20 @@ EditorBuildSettings:
     path: Assets/Scenes/Tutorial (Index 0).unity
     guid: b01d80198ed8d1a49b9cf4b41c9c5f7c
   - enabled: 1
+    path: Assets/Scenes/SpawnMap.unity
+    guid: aec4b6565fb3d4337b31e77d6569b5dd
+  - enabled: 1
+    path: Assets/Scenes/SnowyWonderland.unity
+    guid: 684ec852e8476444aa91a7ecce0d7f18
+  - enabled: 1
     path: Assets/Scenes/Map.unity
     guid: 362181ff407b4d647863555fc9f7f7f8
   - enabled: 1
+    path: Assets/Scenes/DungeonMap.unity
+    guid: 78cb82b6dd8ba41a0b6105897827e5f1
+  - enabled: 0
     path: Assets/Scenes/MovementScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
-    path: Assets/Scenes/SpawnMap.unity
-    guid: aec4b6565fb3d4337b31e77d6569b5dd
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

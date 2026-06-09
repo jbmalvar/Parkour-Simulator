@@ -25,13 +25,19 @@ public class MenuManager : MonoBehaviour
     private static readonly string[] LevelSceneNames =
     {
         "Tutorial (Index 0)",
-        "Map"
+        "SpawnMap",
+        "SnowyWonderland",
+        "Map",
+        "DungeonMap"
     };
 
     public static readonly string[] LevelDisplayNames =
     {
         "Tutorial",
-        "Map 1"
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4"
     };
 
     private readonly Stack<GameObject> panelStack = new Stack<GameObject>();

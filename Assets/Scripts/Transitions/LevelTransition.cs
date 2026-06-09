@@ -7,7 +7,7 @@ public class LevelTransition : MonoBehaviour
     public string nextLevelName;
     public SpeedrunTimer levelTimer;
     public int LevelNumber;
-    public TextMeshProUGUI winText; // drag WinText here
+    public TextMeshProUGUI winText;
     private bool hasFinished = false;
 
     private void OnTriggerEnter(Collider other)
@@ -15,6 +15,7 @@ public class LevelTransition : MonoBehaviour
         if (other.CompareTag("Player") && !hasFinished)
         {
             hasFinished = true;
+
             if (winText != null)
                 winText.gameObject.SetActive(true);
 
@@ -25,6 +26,7 @@ public class LevelTransition : MonoBehaviour
                 LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
             }
 
+            MenuManager.UnlockNextLevel(LevelNumber);
             Invoke("LoadNextScene", 3f); // wait 3 seconds then load
         }
     }
