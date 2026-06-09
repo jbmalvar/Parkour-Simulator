@@ -10,6 +10,7 @@ public class MovingPlatform : MonoBehaviour
     private bool movingToB = true;
     private Transform rider;
     private CharacterController riderController;
+    private PlayerMovement riderMovement;
     private Vector3 lastPosition;
 
     void Start()
@@ -42,9 +43,16 @@ public class MovingPlatform : MonoBehaviour
         if (rider != null)
         {
             if (riderController != null && riderController.enabled && StillOnPlatform(rider))
+            {
                 riderController.Move(delta);
+                // Tell the player they're aboard so its fall-damage logic ignores our
+                // vertical motion (otherwise the apex registers as a big fall).
+                if (riderMovement != null) riderMovement.RideMovingPlatform();
+            }
             else
+            {
                 ClearRider();
+            }
         }
 
         lastPosition = transform.position;
@@ -56,7 +64,7 @@ public class MovingPlatform : MonoBehaviour
         Vector3 local = transform.InverseTransformPoint(r.position);
         return Mathf.Abs(local.x) < 0.75f   // a bit past the platform edge
             && Mathf.Abs(local.z) < 0.75f
-            && local.y > -1f && local.y < 8f; // above the deck, not teleported elsewhere
+            && local.y > -1f && local.y < 2.5f; // standing on the deck — detaches once you jump off
     }
 
     void OnTriggerEnter(Collider other)
@@ -65,6 +73,7 @@ public class MovingPlatform : MonoBehaviour
         {
             rider = other.transform;
             riderController = other.GetComponent<CharacterController>();
+            riderMovement = other.GetComponent<PlayerMovement>();
         }
     }
 
@@ -78,5 +87,6 @@ public class MovingPlatform : MonoBehaviour
     {
         rider = null;
         riderController = null;
+        riderMovement = null;
     }
 }

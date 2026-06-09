@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
 
     private PlayerAbilities playerAbilities;
     private float fallVelocity;
+    private float onPlatformTimer = 0f;   // > 0 while riding a MovingPlatform (it pings us each frame)
 
     [Header("Fall Damage Settings")]
     public float fatalFallSpeed = -18f; // Speed at which player dies without rolling
@@ -99,10 +100,29 @@ public class PlayerMovement : MonoBehaviour
         playerAbilities = GetComponent<PlayerAbilities>();
     }
 
+    // Pinged every frame by a MovingPlatform we're standing on. The short window means
+    // it auto-expires the moment we step or jump off.
+    public void RideMovingPlatform()
+    {
+        onPlatformTimer = 0.2f;
+    }
+
     void Update()
     {
         wasGrounded = isGrounded;
         isGrounded = controller.isGrounded;
+
+        // Riding a moving platform: its up/down motion fools the CharacterController into
+        // thinking we're falling, so the engine builds up "fall velocity" and then dumps
+        // it as huge fall damage at the platform's apex. While aboard, pin the downward
+        // velocity and clear the fall tracker so no bogus fall is ever registered.
+        bool onMovingPlatform = onPlatformTimer > 0f;
+        if (onMovingPlatform)
+        {
+            onPlatformTimer -= Time.unscaledDeltaTime;
+            if (playerVelocity.y < 0f) playerVelocity.y = -2f;
+            fallVelocity = 0f;
+        }
 
         // NEW: Reset gravity when grounded so it doesn't endlessly accumulate
         if (isGrounded && playerVelocity.y < 0)
@@ -145,8 +165,8 @@ public class PlayerMovement : MonoBehaviour
         //     }
         //     fallVelocity = 0; 
         // }
-        // 1. Landing Roll & Fall Damage
-        if (!wasGrounded && isGrounded)
+        // 1. Landing Roll & Fall Damage  (never while riding a platform)
+        if (!wasGrounded && isGrounded && !onMovingPlatform)
         {
             // Check if the player is pressing crouch fast enough to trigger a roll
             bool tryingToRoll = crouchAction.IsPressed() && fallVelocity < -5f;
