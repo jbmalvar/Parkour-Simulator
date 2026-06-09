@@ -31,6 +31,9 @@ public class PlayerAbilities : MonoBehaviour
     [Tooltip("How many seconds of infinite stamina you get per 1 point of mana consumed.")]
     public float staminaDurationPerMana = 0.1f; 
     private Coroutine infiniteStaminaRoutine;
+    
+    // ---> NEW: A public variable so your UI knows exactly how much time is left <---
+    [HideInInspector] public float infiniteStaminaRemainingTime = 0f;
 
     [Header("Quick Regen Settings")]
     public float regenManaCost = 40f;
@@ -79,14 +82,13 @@ public class PlayerAbilities : MonoBehaviour
 
     public bool TriggerGenjiDash()
     {
-        // Add "false" here
         if (playerMana != null && !playerMana.TryUseMana(dashManaCost)) return false; 
 
         playerMovement.EndCurrentAction(); 
         if (currentAbilityRoutine != null) StopCoroutine(currentAbilityRoutine);
         currentAbilityRoutine = StartCoroutine(PerformGenjiDash());
         
-        return true; // Add "true" at the end!
+        return true; 
     }
 
     public bool TriggerSuperJump()
@@ -182,17 +184,21 @@ public class PlayerAbilities : MonoBehaviour
     private IEnumerator PerformInfiniteStamina(float manaConsumed)
     {
         float calculatedDuration = manaConsumed * staminaDurationPerMana;
+        
+        // ---> UPDATED: Set our public tracker to the calculated time <---
+        infiniteStaminaRemainingTime = calculatedDuration; 
+        
         Debug.Log($"Stamina Overload! Infinite stamina for {calculatedDuration} seconds.");
 
-        float timer = 0f;
-        while (timer < calculatedDuration)
+        // ---> UPDATED: Loop while the tracker is above 0 <---
+        while (infiniteStaminaRemainingTime > 0f)
         {
             if (playerStamina != null)
             {
                 playerStamina.SetInfiniteStamina(true);
             }
 
-            timer += Time.unscaledDeltaTime; 
+            infiniteStaminaRemainingTime -= Time.unscaledDeltaTime; 
             yield return null;
         }
 
@@ -201,6 +207,7 @@ public class PlayerAbilities : MonoBehaviour
             playerStamina.SetInfiniteStamina(false);
         }
 
+        infiniteStaminaRemainingTime = 0f; // Reset to 0 safely
         Debug.Log("Infinite stamina ended.");
     }
 
@@ -303,7 +310,6 @@ public class PlayerAbilities : MonoBehaviour
         Debug.Log("Speed Boost has worn off.");
     }
 
-
     public bool TriggerNightLight()
     {
         if (playerMana != null && !playerMana.TryUseMana(lightManaCost)) return false;
@@ -318,17 +324,15 @@ public class PlayerAbilities : MonoBehaviour
     {
         Debug.Log($"Night Light Casted! Illuminating area for {lightDuration} seconds.");
 
-        // Create the light if it doesn't exist yet
         if (activeLight == null)
         {
             activeLight = new GameObject("PlayerMagicalLight");
             
-            // Parent it to the main camera so it follows where the player looks
             activeLight.transform.SetParent(Camera.main.transform);
             activeLight.transform.localPosition = Vector3.zero;
 
             Light lightComponent = activeLight.AddComponent<Light>();
-            lightComponent.type = LightType.Point; // Change to LightType.Spot for a flashlight effect
+            lightComponent.type = LightType.Point; 
             lightComponent.color = lightColor;
             lightComponent.intensity = lightIntensity;
             lightComponent.range = lightRange;

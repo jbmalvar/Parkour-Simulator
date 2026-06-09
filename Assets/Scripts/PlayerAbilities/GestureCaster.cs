@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using PDollarGestureRecognizer; 
 using System.IO;                
+using TMPro;
 
 [RequireComponent(typeof(LineRenderer))]
 [RequireComponent(typeof(AudioSource))] 
@@ -15,13 +16,25 @@ public class GestureCaster : MonoBehaviour
     [Tooltip("Drag the object that has your camera look script here to pause it while drawing.")]
     public MonoBehaviour cameraLookScript; 
 
+    [Header("UI & Timers")] 
+    public TMP_Text abilityTimerText; 
+    public float timeStopDuration = 7f;
+    // ---> REMOVED: infiniteStaminaDuration (we get this from PlayerAbilities now) <---
+    public float safeFallDuration = 10f; // Note: You might want to make these match the durations in PlayerAbilities!
+    public float lightDuration = 10f;
+
+    // Internal UI trackers
+    private float timeStopTimer = 0f;
+    // ---> REMOVED: infiniteStaminaTimer <---
+    private float safeFallTimer = 0f;
+    private float lightTimer = 0f;
+
     [Header("Drawing Settings")]
     public float minDistanceBetweenPoints = 5f; 
     public float drawDistance = 2f; 
 
     [Header("Audio Settings")]
     public AudioSource audioSource;
-    [Tooltip("Sound played when an invalid drawing or nothing is recognized.")]
     public AudioClip failSound;
     public AudioClip timeStopSound;
     public AudioClip infiniteStaminaSound;
@@ -52,15 +65,55 @@ public class GestureCaster : MonoBehaviour
         {
             trainingSet.Add(GestureIO.ReadGestureFromXML(file.text));
         }
+
+        if (abilityTimerText != null) abilityTimerText.text = "";
     }
 
     void Update()
     {
+        HandleTimers(); 
+
         if (Mouse.current == null) return;
 
         if (Mouse.current.rightButton.wasPressedThisFrame) StartDrawing();
         if (Mouse.current.rightButton.isPressed) UpdateDrawing();
         if (Mouse.current.rightButton.wasReleasedThisFrame) EndDrawing();
+    }
+
+    private void HandleTimers()
+    {
+        string currentText = "";
+
+        // ---> UPDATED: Just reads the exact time left from your Abilities script! <---
+        if (playerAbilities != null && playerAbilities.infiniteStaminaRemainingTime > 0)
+        {
+            currentText += $"Inf Stamina: {playerAbilities.infiniteStaminaRemainingTime:F1}s\n";
+        }
+
+        // ---> UPDATED: The following timers now ONLY update the UI. 
+        // They no longer try to force the abilities to end, saving your Coroutines! <---
+        if (timeStopTimer > 0)
+        {
+            timeStopTimer -= Time.unscaledDeltaTime; 
+            if (timeStopTimer > 0) currentText += $"Time Stop: {timeStopTimer:F1}s\n";
+        }
+
+        if (safeFallTimer > 0)
+        {
+            safeFallTimer -= Time.unscaledDeltaTime; 
+            if (safeFallTimer > 0) currentText += $"Safe Fall: {safeFallTimer:F1}s\n";
+        }
+
+        if (lightTimer > 0)
+        {
+            lightTimer -= Time.unscaledDeltaTime; 
+            if (lightTimer > 0) currentText += $"Light: {lightTimer:F1}s\n";
+        }
+
+        if (abilityTimerText != null)
+        {
+            abilityTimerText.text = currentText;
+        }
     }
 
     private void StartDrawing()
@@ -113,11 +166,11 @@ public class GestureCaster : MonoBehaviour
         {
             Result result = PointCloudRecognizer.Classify(playerDrawing, trainingSet.ToArray());
 
-            // ---> UPDATED: All checks now expect PlayerAbilities to return true if successful <---
             if (result.Score > 0.8f && result.GestureClass == "Hourglass")
             {
                 if (playerAbilities != null && playerAbilities.TriggerTimeStop()) 
                 {
+                    timeStopTimer = timeStopDuration; 
                     PlayCastSound(timeStopSound);
                 }
                 return; 
@@ -127,6 +180,7 @@ public class GestureCaster : MonoBehaviour
             {
                 if (playerAbilities != null && playerAbilities.TriggerInfiniteStamina())
                 {
+                    // ---> UPDATED: We no longer set a timer here. PlayerAbilities handles it natively! <---
                     PlayCastSound(infiniteStaminaSound);
                 }
                 return;
@@ -154,6 +208,7 @@ public class GestureCaster : MonoBehaviour
             {
                 if (playerAbilities != null && playerAbilities.TriggerSafeFall())
                 {
+                    safeFallTimer = safeFallDuration; 
                     PlayCastSound(safeFallSound);
                 }
                 return;
@@ -168,11 +223,11 @@ public class GestureCaster : MonoBehaviour
                 return;
             }
 
-            // Check for the Light / Night Vision gesture
             if (result.Score > 0.9f && result.GestureClass == "light")
             {
                 if (playerAbilities != null && playerAbilities.TriggerNightLight())
                 {
+                    lightTimer = lightDuration; 
                     PlayCastSound(lightSpellSound);
                 }
                 return;
@@ -183,7 +238,6 @@ public class GestureCaster : MonoBehaviour
             Debug.LogWarning("No gestures loaded! Make sure your .xml files are in Assets/Resources/GestureSet");
         }
 
-        // --- 2. Fallback to Simple Swipes ---
         Vector2 startPoint = screenPoints[0];
         Vector2 endPoint = screenPoints[screenPoints.Count - 1];
         Vector2 swipeVector = endPoint - startPoint;
