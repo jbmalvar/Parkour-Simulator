@@ -8,7 +8,7 @@ public class PlayerAbilities : MonoBehaviour
     private CharacterController controller;
     private PlayerMana playerMana; 
     private PlayerStamina playerStamina;
-    private PlayerHealth playerHealth; // ---> NEW: Reference to health <---
+    private PlayerHealth playerHealth;
 
     [Header("Mana Costs")]
     public float dashManaCost = 20f;
@@ -32,33 +32,32 @@ public class PlayerAbilities : MonoBehaviour
     public float staminaDurationPerMana = 0.1f; 
     private Coroutine infiniteStaminaRoutine;
 
-    // ---> NEW: Quick Regen Settings <---
     [Header("Quick Regen Settings")]
     public float regenManaCost = 40f;
-    public int regenTotalAmount = 50; // Total health to restore
-    public float regenDuration = 1.5f; // How fast to restore it
+    public int regenTotalAmount = 50; 
+    public float regenDuration = 1.5f; 
     private Coroutine regenRoutine;
 
     [Header("Mana Burst Settings")]
-    public float manaBurstTotalAmount = 50f; // Total mana to restore
-    public float manaBurstDuration = 1.0f;   // How fast to restore it
+    public float manaBurstTotalAmount = 50f; 
+    public float manaBurstDuration = 1.0f;  
     private Coroutine manaBurstRoutine;
 
     [Header("Safe Fall Settings")]
     public float safeFallManaCost = 20f;
-    public float safeFallDuration = 8f; // How long you have to hit the ground
+    public float safeFallDuration = 8f; 
     private Coroutine safeFallRoutine;
 
     [Header("Speed Boost Settings")]
     public float speedBoostManaCost = 30f;
-    public float speedBoostMultiplier = 2f; // Doubles your speed
+    public float speedBoostMultiplier = 2f; 
     public float speedBoostDuration = 6f;
     private Coroutine speedBoostRoutine;
 
     private Coroutine currentAbilityRoutine;
     private Coroutine timeStopRoutine; 
 
-    public bool isTimeStopActive = false; // <--- NEW FLAG
+    public bool isTimeStopActive = false; 
 
     void Start()
     {
@@ -66,61 +65,71 @@ public class PlayerAbilities : MonoBehaviour
         controller = GetComponent<CharacterController>();
         playerMana = GetComponent<PlayerMana>(); 
         playerStamina = GetComponent<PlayerStamina>();
-        playerHealth = GetComponent<PlayerHealth>(); // ---> NEW: Grab health component <---
+        playerHealth = GetComponent<PlayerHealth>(); 
     }
 
-    public void TriggerGenjiDash()
+    public bool TriggerGenjiDash()
     {
-        if (playerMana != null && !playerMana.TryUseMana(dashManaCost)) return; 
+        // Add "false" here
+        if (playerMana != null && !playerMana.TryUseMana(dashManaCost)) return false; 
 
         playerMovement.EndCurrentAction(); 
         if (currentAbilityRoutine != null) StopCoroutine(currentAbilityRoutine);
         currentAbilityRoutine = StartCoroutine(PerformGenjiDash());
+        
+        return true; // Add "true" at the end!
     }
 
-    public void TriggerSuperJump()
+    public bool TriggerSuperJump()
     {
-        if (playerMana != null && !playerMana.TryUseMana(superJumpManaCost)) return;
+        if (playerMana != null && !playerMana.TryUseMana(superJumpManaCost)) return false;
 
         playerMovement.EndCurrentAction();
         float baseJumpHeight = playerMovement.jumpHeight;
         float gravity = playerMovement.gravity;
 
         playerMovement.playerVelocity.y = Mathf.Sqrt((baseJumpHeight * superJumpMultiplier) * -2f * gravity); 
+        
+        return true;
     }
 
-    public void TriggerTimeStop()
+    public bool TriggerTimeStop()
     {
-        if (playerMana != null && !playerMana.TryUseMana(timeStopManaCost)) return;
+        if (playerMana != null && !playerMana.TryUseMana(timeStopManaCost)) return false;
 
         if (timeStopRoutine != null) StopCoroutine(timeStopRoutine);
         timeStopRoutine = StartCoroutine(PerformTimeStop());
+        
+        return true;
     }
 
-    public void TriggerInfiniteStamina()
+    public bool TriggerInfiniteStamina()
     {
-        if (playerMana == null) return;
+        if (playerMana == null) return false;
 
         float manaConsumed = playerMana.DrainAllMana();
 
         if (manaConsumed <= 0f) 
         {
             Debug.Log("No mana to convert to stamina!");
-            return;
+            return false;
         }
 
         if (infiniteStaminaRoutine != null) StopCoroutine(infiniteStaminaRoutine);
         infiniteStaminaRoutine = StartCoroutine(PerformInfiniteStamina(manaConsumed));
+        
+        return true;
     }
 
-    // ---> NEW: Trigger Quick Regen <---
-    public void TriggerQuickRegen()
+    public bool TriggerQuickRegen()
     {
-        if (playerMana != null && !playerMana.TryUseMana(regenManaCost)) return;
-        if (playerHealth == null) return;
+        if (playerMana != null && !playerMana.TryUseMana(regenManaCost)) return false;
+        if (playerHealth == null) return false;
 
         if (regenRoutine != null) StopCoroutine(regenRoutine);
         regenRoutine = StartCoroutine(PerformQuickRegen());
+        
+        return true;
     }
 
     private IEnumerator PerformGenjiDash()
@@ -142,7 +151,7 @@ public class PlayerAbilities : MonoBehaviour
     private IEnumerator PerformTimeStop()
     {
         Debug.Log("ZA WARUDO! Time Stopped.");
-        isTimeStopActive = true; // <--- TURN FLAG ON
+        isTimeStopActive = true; 
 
         float timer = 0f;
         float defaultFixedDelta = 0.02f; 
@@ -157,7 +166,7 @@ public class PlayerAbilities : MonoBehaviour
 
         Time.timeScale = 1f;
         Time.fixedDeltaTime = defaultFixedDelta;
-        isTimeStopActive = false; // <--- TURN FLAG OFF
+        isTimeStopActive = false; 
         Debug.Log("Time resumed.");
     }
 
@@ -186,12 +195,10 @@ public class PlayerAbilities : MonoBehaviour
         Debug.Log("Infinite stamina ended.");
     }
 
-    // ---> NEW: Perform Quick Regen <---
     private IEnumerator PerformQuickRegen()
     {
         Debug.Log("Quick Regen Started!");
         
-        // We break the total heal amount into 10 rapid "ticks"
         int ticks = 10;
         int healPerTick = regenTotalAmount / ticks;
         float timeBetweenTicks = regenDuration / ticks;
@@ -199,29 +206,26 @@ public class PlayerAbilities : MonoBehaviour
         for (int i = 0; i < ticks; i++)
         {
             playerHealth.Heal(healPerTick);
-            // Using Realtime so you can still heal while time is stopped!
             yield return new WaitForSecondsRealtime(timeBetweenTicks); 
         }
 
         Debug.Log("Quick Regen Finished.");
     }
 
-    // ---> NEW: Trigger Mana Burst <---
-    public void TriggerManaBurst()
+    public bool TriggerManaBurst()
     {
-        if (playerMana == null) return;
+        if (playerMana == null) return false;
 
-        // Stop any current mana burst so they don't overlap and break the math
         if (manaBurstRoutine != null) StopCoroutine(manaBurstRoutine);
         manaBurstRoutine = StartCoroutine(PerformManaBurst());
+        
+        return true;
     }
 
-    // ---> NEW: Perform Mana Burst <---
     private IEnumerator PerformManaBurst()
     {
         Debug.Log("Mana Burst Casted! Restoring mana...");
         
-        // Break the total mana restoration into 10 rapid ticks for a smooth UI fill
         int ticks = 10;
         float manaPerTick = manaBurstTotalAmount / ticks;
         float timeBetweenTicks = manaBurstDuration / ticks;
@@ -229,70 +233,63 @@ public class PlayerAbilities : MonoBehaviour
         for (int i = 0; i < ticks; i++)
         {
             playerMana.RestoreMana(manaPerTick);
-            // Using Realtime so it works even if you cast it while time is stopped
             yield return new WaitForSecondsRealtime(timeBetweenTicks); 
         }
 
         Debug.Log("Mana Burst Finished.");
     }
 
-    // ---> NEW: Trigger Safe Fall <---
-    public void TriggerSafeFall()
+    public bool TriggerSafeFall()
     {
-        if (playerMana != null && !playerMana.TryUseMana(safeFallManaCost)) return;
-        if (playerHealth == null) return;
+        if (playerMana != null && !playerMana.TryUseMana(safeFallManaCost)) return false;
+        if (playerHealth == null) return false;
 
         if (safeFallRoutine != null) StopCoroutine(safeFallRoutine);
         safeFallRoutine = StartCoroutine(PerformSafeFall());
+        
+        return true;
     }
 
-    // ---> NEW: Perform Safe Fall <---
     private IEnumerator PerformSafeFall()
     {
         Debug.Log($"Safe Fall Active! Immune to fall damage for {safeFallDuration} seconds.");
         
-        // Turn the shield ON
         playerHealth.isFallDamageImmune = true;
 
         float timer = 0f;
         while (timer < safeFallDuration)
         {
-            // Using unscaledDeltaTime so the buff duration doesn't break if you cast Time Stop!
             timer += Time.unscaledDeltaTime; 
             yield return null;
         }
 
-        // Turn the shield OFF
         playerHealth.isFallDamageImmune = false;
         Debug.Log("Safe Fall has worn off!");
     }
 
-    // ---> NEW: Trigger Speed Boost <---
-    public void TriggerSpeedBoost()
+    public bool TriggerSpeedBoost()
     {
-        if (playerMana != null && !playerMana.TryUseMana(speedBoostManaCost)) return;
+        if (playerMana != null && !playerMana.TryUseMana(speedBoostManaCost)) return false;
 
         if (speedBoostRoutine != null) StopCoroutine(speedBoostRoutine);
         speedBoostRoutine = StartCoroutine(PerformSpeedBoost());
+        
+        return true;
     }
 
-    // ---> NEW: Perform Speed Boost <---
     private IEnumerator PerformSpeedBoost()
     {
         Debug.Log($"Speed Boost Active! Speed multiplied by {speedBoostMultiplier} for {speedBoostDuration} seconds.");
         
-        // Turn the speed up
         playerMovement.activeSpeedMultiplier = speedBoostMultiplier;
 
         float timer = 0f;
         while (timer < speedBoostDuration)
         {
-            // Using unscaledDeltaTime so you stay fast even if Time Stop is active!
             timer += Time.unscaledDeltaTime; 
             yield return null;
         }
 
-        // Return speed to normal
         playerMovement.activeSpeedMultiplier = 1f;
         Debug.Log("Speed Boost has worn off.");
     }

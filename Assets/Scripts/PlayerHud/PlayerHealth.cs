@@ -120,17 +120,20 @@ public class PlayerHealth : MonoBehaviour
         
     }
 
+    private bool isDying = false;
+
     private void Die()
     {
-        Debug.Log("Player Died! Restarting level in 1 second...");
-        
+        if (isDying) return;          // don't re-trigger mid-respawn
+        isDying = true;
+
+        Debug.Log("Player Died! Respawning at last checkpoint...");
+
         if (audioSource != null && deathSound != null)
         {
             audioSource.PlayOneShot(deathSound);
         }
 
-        this.enabled = false; 
-        
         StartCoroutine(DeathSequence());
     }
 
@@ -138,13 +141,27 @@ public class PlayerHealth : MonoBehaviour
     {
         if (damageOverlay != null)
         {
-            damageOverlay.color = new Color(1, 0, 0, 1f); 
+            damageOverlay.color = new Color(1, 0, 0, 1f);
         }
 
-        yield return new WaitForSecondsRealtime(1f);
+        // Respawn at the last checkpoint (handles fade + teleport) instead of reloading
+        // the whole level back to the start.
+        if (CheckpointManager.Instance != null)
+        {
+            CheckpointManager.Instance.TriggerDeath();
+            yield return new WaitForSecondsRealtime(0.5f);   // let the fade hide the teleport
 
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+            currentHealth = maxHealth;
+            if (healthBarFill != null) healthBarFill.fillAmount = 1f;
+            if (damageOverlay != null) damageOverlay.color = new Color(1, 0, 0, 0f);
+            isDying = false;
+        }
+        else
+        {
+            // Fallback if there is no CheckpointManager in the scene.
+            yield return new WaitForSecondsRealtime(1f);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     // ---> NEW: Method to handle incoming healing <---

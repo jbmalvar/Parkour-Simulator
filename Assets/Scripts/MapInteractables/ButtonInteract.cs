@@ -7,6 +7,11 @@ public class ButtonInteract : MonoBehaviour
     private bool isOpen = false;
     public float interactDistance = 3f;
 
+    [Header("Audio")]
+    public AudioClip openSound;
+    public AudioClip closeSound;
+    private AudioSource audioSource;
+
     private InputAction clickAction;
 
     void Start()
@@ -15,6 +20,8 @@ public class ButtonInteract : MonoBehaviour
         if (clickAction == null)
             clickAction = new InputAction(type: InputActionType.Button, binding: "<Mouse>/leftButton");
         clickAction.Enable();
+
+        audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -37,5 +44,10 @@ public class ButtonInteract : MonoBehaviour
         isOpen = !isOpen;
         if (door != null)
             door.SetActive(!isOpen);
+
+        if (isOpen && openSound != null)
+            audioSource.PlayOneShot(openSound);
+        else if (!isOpen && closeSound != null)
+            audioSource.PlayOneShot(closeSound);
     }
 }

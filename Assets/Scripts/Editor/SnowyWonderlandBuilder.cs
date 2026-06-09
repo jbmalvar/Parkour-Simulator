@@ -23,9 +23,11 @@ public static class SnowyWonderlandBuilder
 
     // Course heights (local to the root)
     const float Top = 5f;              // surface height of the ice shelf above the player's spawn
-    const float KillY = 1.5f;          // a single crevasse-floor kill-plane: below every
-                                       // platform (lowest is Top-2 = 3) but above the original
-                                       // ground (~0), so EVERY fall is caught no matter where.
+    const float KillTopY = 2.5f;       // TOP of the crevasse kill-volume — below the lowest
+                                       // walkable surface (avalanche bottom = Top-2 = 3) but high
+                                       // enough that falls die quickly. The volume is THICK so a
+                                       // fast fall can't tunnel through it.
+    const float KillThickness = 28f;
     const float Thick = 0.5f;          // platform slab thickness
 
     // Shared materials (built once per Build)
@@ -517,8 +519,8 @@ public static class SnowyWonderlandBuilder
     {
         float len = totalLength + 40f;     // generous margin front and back
         var go = Box("CrevasseFloor", root,
-            new Vector3(0, KillY, totalLength / 2f - 10f),
-            new Vector3(90f, 0.5f, len), _hazard);
+            new Vector3(0, KillTopY - KillThickness / 2f, totalLength / 2f - 10f),
+            new Vector3(90f, KillThickness, len), _hazard);
         go.GetComponent<BoxCollider>().isTrigger = true;
         go.AddComponent<DeathZone>();      // uses Checkpoint.IsPlayer (tag OR PlayerMovement)
     }
