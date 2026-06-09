@@ -12,6 +12,7 @@ public class MenuManager : MonoBehaviour
     public GameObject aboutPanel;
     public GameObject settingsPanel;
     public GameObject levelConfirmPanel;
+    public GameObject leaderboardPanel;
 
     [Header("Level Confirm")]
     public TMPro.TextMeshProUGUI confirmLevelNameText;
@@ -58,6 +59,7 @@ public class MenuManager : MonoBehaviour
     public void ShowLevelSelect() => PushPanel(levelSelectPanel);
     public void ShowAbout()       => PushPanel(aboutPanel);
     public void ShowSettings()    => PushPanel(settingsPanel);
+    public void ShowLeaderboard() => PushPanel(leaderboardPanel);
 
     public void GoBack()
     {
@@ -168,6 +170,7 @@ public class MenuManager : MonoBehaviour
         aboutPanel.SetActive(false);
         settingsPanel.SetActive(false);
         levelConfirmPanel.SetActive(false);
+        leaderboardPanel.SetActive(false);
 
         panelStack.Push(panel);
         panel.SetActive(true);

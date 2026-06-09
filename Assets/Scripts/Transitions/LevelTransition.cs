@@ -5,7 +5,8 @@ public class LevelTransition : MonoBehaviour
 {
     [Tooltip("Type the exact name of the next level/scene here in the Inspector")]
     public string nextLevelName;
-    public SpeedrunTimer levelTimer; 
+    public SpeedrunTimer levelTimer;
+    public int LevelNumber;
     private bool hasFinished = false;
 
     private void OnTriggerEnter(Collider other)
@@ -15,9 +16,11 @@ public class LevelTransition : MonoBehaviour
         {
             // Send to DB with name and Time
             hasFinished = true;
-            float finalTime = levelTimer.StopTimer();
-            string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
-            LeaderboardManager.Instance.SubmitScore(1, player, finalTime);
+            if (LevelNumber > 0) {
+                float finalTime = levelTimer.StopTimer();
+                string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
+                LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
+            }
             SceneManager.LoadScene(nextLevelName);
             // Debug.Log("Player touched the portal! Loading level: " + nextLevelName);
         }
