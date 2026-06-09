@@ -26,12 +26,24 @@ public class CheckpointManager : MonoBehaviour
 
     void Start()
     {
+        ResolvePlayer();
         if (player != null)
         {
             characterController = player.GetComponent<CharacterController>();
             checkpointPosition = player.position;
             checkpointRotation = player.rotation;
         }
+    }
+
+    // Find the player even if the inspector reference is empty or got broken (e.g. the
+    // rig was swapped in from another scene). Looks up the PlayerMovement, then the tag.
+    private void ResolvePlayer()
+    {
+        if (player != null) return;
+        var pm = FindFirstObjectByType<PlayerMovement>();
+        if (pm != null) { player = pm.transform; return; }
+        var tagged = GameObject.FindWithTag("Player");
+        if (tagged != null) player = tagged.transform;
     }
 
     void Update()
@@ -55,6 +67,15 @@ public class CheckpointManager : MonoBehaviour
     private IEnumerator Respawn()
     {
         isRespawning = true;
+
+        ResolvePlayer();                 // make sure we still have a valid player
+        if (player == null)
+        {
+            Debug.LogWarning("CheckpointManager: no player found to respawn.");
+            isRespawning = false;
+            yield break;
+        }
+        if (characterController == null) characterController = player.GetComponent<CharacterController>();
 
         if (screenFade != null)
             yield return StartCoroutine(screenFade.FadeOut());
