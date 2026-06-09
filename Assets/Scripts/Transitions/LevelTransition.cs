@@ -7,31 +7,21 @@ public class LevelTransition : MonoBehaviour
     public string nextLevelName;
     public SpeedrunTimer levelTimer;
     public int LevelNumber;
-    public TextMeshProUGUI winText; // drag WinText here
     private bool hasFinished = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !hasFinished)
+        if (other.CompareTag("Player"))
         {
             hasFinished = true;
-            if (winText != null)
-                winText.gameObject.SetActive(true);
-
-            if (LevelNumber > 0)
-            {
+            if (LevelNumber > 0) {
                 float finalTime = levelTimer.StopTimer();
                 string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
                 LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
             }
 
-            Invoke("LoadNextScene", 3f); // wait 3 seconds then load
-        }
-    }
-
-    void LoadNextScene()
-    {
-        if (nextLevelName != "")
             SceneManager.LoadScene(nextLevelName);
+            // Debug.Log("Player touched the portal! Loading level: " + nextLevelName);
+        }
     }
 }
