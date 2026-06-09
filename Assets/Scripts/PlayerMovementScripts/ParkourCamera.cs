@@ -51,6 +51,11 @@ public class ParkourCamera : MonoBehaviour
 
     void LateUpdate()
     {
+        // =========================================================
+        // PAUSE CHECK: If the game is paused, stop everything here.
+        // =========================================================
+        if (PauseMenu.GameIsPaused) return;
+
         if (lookAction == null || playerBody == null || targetHeadBone == null) return;
 
         // 1. Standard Mouse Look Logic

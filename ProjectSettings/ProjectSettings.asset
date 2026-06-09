@@ -925,11 +925,11 @@ PlayerSettings:
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 768c87f5-9449-4f05-b946-9563164c08c8
+  cloudProjectId: e4f6679d-c89a-472e-b690-e567a1e818b9
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: My project
-  organizationId: jeannchoee
+  projectName: Parkour Simulator
+  organizationId: yelimakesgames
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
