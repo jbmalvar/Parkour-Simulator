@@ -23,10 +23,11 @@ public static class SnowyWonderlandBuilder
 
     // Course heights (local to the root)
     const float Top = 5f;              // surface height of the ice shelf above the player's spawn
-    const float KillTopY = 2.5f;       // TOP of the crevasse kill-volume — below the lowest
-                                       // walkable surface (avalanche bottom = Top-2 = 3) but high
-                                       // enough that falls die quickly. The volume is THICK so a
-                                       // fast fall can't tunnel through it.
+    const float KillTopY = 1.5f;       // TOP of the crevasse kill-volume. Kept ~1.5m below the
+                                       // lowest walkable surface (the moving platforms / avalanche
+                                       // bottom at y=3) so a descending platform can't briefly sink
+                                       // the player into it. Still THICK, so death is instant on
+                                       // contact (no tunnelling) — just after a slightly longer fall.
     const float KillThickness = 28f;
     const float Thick = 0.5f;          // platform slab thickness
 

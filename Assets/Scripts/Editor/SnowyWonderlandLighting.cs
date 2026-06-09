@@ -31,7 +31,9 @@ public static class SnowyWonderlandLighting
     const float LampIntensity = 4f;
 
     // --- Death-plane knobs (local to the FrozenGauntlet root) ---
-    const float DeathPlaneTop = 2.5f;  // was 1.5 and thin; raise + thicken so falls die fast.
+    // 1.5 keeps it ~1.5m below the moving platforms (y=3) so they can't dip the player
+    // into it, while staying thick enough that fast falls die on contact (no tunnelling).
+    const float DeathPlaneTop = 1.5f;
     const float DeathPlaneThickness = 28f;
 
     [MenuItem("Tools/Snowy Wonderland/Dark Mode + Checkpoint Lamps")]
@@ -50,6 +52,26 @@ public static class SnowyWonderlandLighting
         Debug.Log($"🌙 Dark neon look applied: {n} lamp(s), glow stripped from {mats} platform material(s), " +
                   "bloom/vignette enabled. If it's now TOO dark, raise DirectionalIntensity/AmbientColor " +
                   "(or a lamp's Range/Intensity).");
+    }
+
+    [MenuItem("Tools/Snowy Wonderland/Add Persistent Night Mode")]
+    public static void AddPersistentNightMode()
+    {
+        var existing = Object.FindFirstObjectByType<SnowyNightMode>();
+        if (existing != null)
+        {
+            Selection.activeGameObject = existing.gameObject;
+            Debug.Log("SnowyNightMode is already in the scene — it re-applies the look every Play.");
+            return;
+        }
+
+        var go = new GameObject("SnowyNightMode");
+        go.AddComponent<SnowyNightMode>();
+        Undo.RegisterCreatedObjectUndo(go, "Add SnowyNightMode");
+        Selection.activeGameObject = go;
+        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+        Debug.Log("✓ Added SnowyNightMode. It re-applies the dark + cyan-neon look automatically on " +
+                  "every Play and in builds, so a teammate overwriting the scene can't lose it. Save the scene.");
     }
 
     [MenuItem("Tools/Snowy Wonderland/Raise Death Plane")]
