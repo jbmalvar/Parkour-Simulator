@@ -712,6 +712,18 @@ MonoBehaviour:
   superJumpMultiplier: 3
   timeStopDuration: 5
   timeScaleDuringStop: 0.05
+  staminaDurationPerMana: 0.1
+  regenManaCost: 40
+  regenTotalAmount: 50
+  regenDuration: 1.5
+  manaBurstTotalAmount: 50
+  manaBurstDuration: 1
+  safeFallManaCost: 20
+  safeFallDuration: 8
+  speedBoostManaCost: 30
+  speedBoostMultiplier: 2
+  speedBoostDuration: 6
+  isTimeStopActive: 0
 --- !u!114 &28609862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -754,6 +766,7 @@ MonoBehaviour:
   vaultLayer:
     serializedVersion: 2
     m_Bits: 64
+  activeSpeedMultiplier: 1
   playerVelocity: {x: 0, y: 0, z: 0}
 --- !u!143 &28609863
 CharacterController:
@@ -3865,6 +3878,14 @@ PrefabInstance:
       propertyPath: door
       value: 
       objectReference: {fileID: 1722136763}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
@@ -9908,6 +9929,14 @@ PrefabInstance:
       propertyPath: door
       value: 
       objectReference: {fileID: 1200043034}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
@@ -27942,6 +27971,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1880733645}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
       objectReference: {fileID: 0}
@@ -36388,6 +36425,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1317330487}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
       objectReference: {fileID: 0}
@@ -42398,6 +42443,14 @@ PrefabInstance:
       propertyPath: door
       value: 
       objectReference: {fileID: 556196251}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
@@ -57020,6 +57073,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1714606144}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
       objectReference: {fileID: 0}
@@ -60038,6 +60099,14 @@ PrefabInstance:
       propertyPath: door
       value: 
       objectReference: {fileID: 1846560097}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
@@ -63841,6 +63910,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1482013611}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
       objectReference: {fileID: 0}
@@ -64260,6 +64337,14 @@ PrefabInstance:
       propertyPath: door
       value: 
       objectReference: {fileID: 2014963251}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5195a505564b04102be448499c57a0b2, type: 3}
+    - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d3e1ea9c6976460e965f08a79465702, type: 3}
     - target: {fileID: 6894593835206406864, guid: 8d24344481a8847b6831b9ce9cebadff, type: 3}
       propertyPath: interactDistance
       value: 3
