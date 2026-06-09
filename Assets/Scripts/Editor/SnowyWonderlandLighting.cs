@@ -252,7 +252,7 @@ public static class SnowyWonderlandLighting
         foreach (var go in Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
             if (go.name == LampName) Object.DestroyImmediate(go);
 
-        var headMat = Emissive(LampColor, 6f);   // strong so it blooms
+        var headMat = UnlitGlow(LampColor, 4f);  // unlit = always visible, bright enough to bloom
         var postMat = Matte(new Color(0.05f, 0.05f, 0.06f));
 
         int n = 0;
@@ -296,11 +296,11 @@ public static class SnowyWonderlandLighting
         arm.GetComponent<Renderer>().sharedMaterial = postMat;
         Object.DestroyImmediate(arm.GetComponent<Collider>());
 
-        // Glowing lamp head.
+        // Glowing lamp head — a bright unlit orb that's always visible as a marker.
         var head = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         head.name = "LampHead";
         head.transform.SetParent(lamp.transform, false);
-        head.transform.localScale = Vector3.one * 0.5f;
+        head.transform.localScale = Vector3.one * 0.7f;
         head.transform.localPosition = new Vector3(0.5f, 3.15f, 0);
         head.GetComponent<Renderer>().sharedMaterial = headMat;
         Object.DestroyImmediate(head.GetComponent<Collider>());
@@ -331,6 +331,26 @@ public static class SnowyWonderlandLighting
         m.EnableKeyword("_EMISSION");
         m.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
         if (m.HasProperty("_EmissionColor")) m.SetColor("_EmissionColor", c * strength);
+        return m;
+    }
+
+    /// <summary>
+    /// An UNLIT, self-illuminated material: it renders its colour directly, ignoring scene
+    /// lighting/fog, so the lamp head is always visible as a bright marker even in pitch
+    /// black. The HDR (>1) colour also makes it bloom when post-processing is on.
+    /// </summary>
+    static Material UnlitGlow(Color c, float intensity)
+    {
+        var shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
+        var m = new Material(shader);
+        Color hdr = c * intensity;
+        if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", hdr);
+        m.color = hdr;
+        if (m.HasProperty("_EmissionColor"))
+        {
+            m.EnableKeyword("_EMISSION");
+            m.SetColor("_EmissionColor", hdr);
+        }
         return m;
     }
 }
