@@ -36,7 +36,7 @@ public class MenuButton : MonoBehaviour
         {
             case Action.Play:          m.ShowLevelSelect();    break;
             case Action.About:         m.ShowAbout();          break;
-            case Action.Settings:      m.ShowSettings();       break;
+            case Action.Settings:      m.ShowName();       break;
             case Action.Exit:          m.ExitGame();           break;
             case Action.Back:          m.GoBack();             break;
             case Action.StartLevel:    m.ConfirmStartLevel();  break;

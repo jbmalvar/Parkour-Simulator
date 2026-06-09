@@ -10,7 +10,7 @@ public class MenuManager : MonoBehaviour
     public GameObject landingPanel;
     public GameObject levelSelectPanel;
     public GameObject aboutPanel;
-    public GameObject settingsPanel;
+    public GameObject namePanel;
     public GameObject levelConfirmPanel;
     public GameObject leaderboardPanel;
 
@@ -64,7 +64,7 @@ public class MenuManager : MonoBehaviour
 
     public void ShowLevelSelect() => PushPanel(levelSelectPanel);
     public void ShowAbout()       => PushPanel(aboutPanel);
-    public void ShowSettings()    => PushPanel(settingsPanel);
+    public void ShowName()    => PushPanel(namePanel);
     public void ShowLeaderboard() => PushPanel(leaderboardPanel);
 
     public void GoBack()
@@ -174,7 +174,7 @@ public class MenuManager : MonoBehaviour
         landingPanel.SetActive(false);
         levelSelectPanel.SetActive(false);
         aboutPanel.SetActive(false);
-        settingsPanel.SetActive(false);
+        namePanel.SetActive(false);
         levelConfirmPanel.SetActive(false);
         leaderboardPanel.SetActive(false);
 
