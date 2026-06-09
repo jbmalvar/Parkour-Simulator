@@ -3,30 +3,18 @@ using TMPro;
 
 public class LeaderboardUI : MonoBehaviour
 {
-    [Header("Menu Panels")]
-    public GameObject mainMenuPanel;
-    public GameObject leaderboardPanel;
-
     [Header("Leaderboard Elements")]
     public Transform entriesContainer;
-    public GameObject scoreEntryPrefab; // Drag your text prefab here
+    public GameObject scoreEntryPrefab; 
     public TextMeshProUGUI levelTitleText;
 
-    private int currentDisplayLevel = 1; // Starts by showing Level 1
+    private int currentDisplayLevel = 1; 
 
-    public void OpenLeaderboard()
+    // This automatically runs when MenuManager activates this panel
+    void OnEnable() 
     {
-        mainMenuPanel.SetActive(false);
-        leaderboardPanel.SetActive(true);
         LoadLevelData(currentDisplayLevel);
     }
-
-    public void CloseLeaderboard()
-    {
-        leaderboardPanel.SetActive(false);
-        mainMenuPanel.SetActive(true);
-    }
-
 
     public void NextLevel()
     {
@@ -52,15 +40,12 @@ public class LeaderboardUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-
         LeaderboardManager.Instance.FetchLeaderboard(level, OnScoresReceived);
     }
-
 
     private void OnScoresReceived(ScoreData[] scores)
     {
         levelTitleText.text = $"Level {currentDisplayLevel} Top Times";
-
     
         if (scores == null || scores.Length == 0)
         {

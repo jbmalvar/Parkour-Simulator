@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(AudioSource))] // Ensures the GameObject always has an AudioSource
 public class PlayerMana : MonoBehaviour
 {
     [Header("Mana Settings")]
@@ -11,10 +12,18 @@ public class PlayerMana : MonoBehaviour
     [Header("UI")]
     public Image manaBarFill;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    [Tooltip("Sound played when attempting to cast without enough mana.")]
+    public AudioClip outOfManaSound;
+
     void Start()
     {
         currentMana = maxMana;
         UpdateUI();
+
+        // Auto-grab the AudioSource if it wasn't assigned in the inspector
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -39,6 +48,13 @@ public class PlayerMana : MonoBehaviour
             return true; // Successfully cast the spell
         }
         
+        // ---> NEW: Play out of mana sound <---
+        if (audioSource != null && outOfManaSound != null)
+        {
+            // PlayOneShot prevents the sound from clipping if the player spams the button
+            audioSource.PlayOneShot(outOfManaSound);
+        }
+
         Debug.Log("Not enough mana!");
         return false; // Spell failed
     }
@@ -51,7 +67,7 @@ public class PlayerMana : MonoBehaviour
         }
     }
 
-    // ---> NEW: Drains everything and returns the amount taken to scale abilities <---
+    // Drains everything and returns the amount taken to scale abilities
     public float DrainAllMana()
     {
         float manaDrained = currentMana;

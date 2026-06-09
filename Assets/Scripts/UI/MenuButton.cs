@@ -15,7 +15,8 @@ public class MenuButton : MonoBehaviour
         Exit,           // -> ExitGame
         Back,           // -> GoBack
         StartLevel,     // -> ConfirmStartLevel
-        CancelConfirm   // -> CancelLevelConfirm
+        CancelConfirm,   // -> CancelLevelConfirm
+        Leaderboard
     }
 
     public Action action;
@@ -40,6 +41,7 @@ public class MenuButton : MonoBehaviour
             case Action.Back:          m.GoBack();             break;
             case Action.StartLevel:    m.ConfirmStartLevel();  break;
             case Action.CancelConfirm: m.CancelLevelConfirm(); break;
+            case Action.Leaderboard:   m.ShowLeaderboard();    break;
         }
     }
 }
