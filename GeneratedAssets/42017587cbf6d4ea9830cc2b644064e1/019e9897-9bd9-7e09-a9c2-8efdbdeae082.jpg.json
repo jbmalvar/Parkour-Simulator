@@ -1,0 +1,38 @@
+{
+    "asset": "42017587cbf6d4ea9830cc2b644064e1",
+    "fileName": "019e9897-9bd9-7e09-a9c2-8efdbdeae082.jpg",
+    "prompt": "a single stylized stone tower with a snow-covered wooden roof, hand-painted texture, cyan and blue atmospheric lighting, white background, isolated game asset, matching the style of the reference image",
+    "negativePrompt": "",
+    "model": "flux-2-pro",
+    "modelName": "Flux 2 (Pro)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "efccf7950f5b74a269f1dca8b381fe33",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

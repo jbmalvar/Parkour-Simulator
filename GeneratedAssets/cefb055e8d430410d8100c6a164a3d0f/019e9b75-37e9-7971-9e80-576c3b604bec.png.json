@@ -1,0 +1,28 @@
+{
+    "asset": "cefb055e8d430410d8100c6a164a3d0f",
+    "fileName": "019e9b75-37e9-7971-9e80-576c3b604bec.png",
+    "prompt": "A concept art of a massive, scary Yeti monster, muscular, white fur, running on all 4s, aggressive pose, front view, snowy background, stylized but realistic art style.",
+    "negativePrompt": "",
+    "model": "gemini-3.1-flash",
+    "modelName": "Gemini 3.1 Nano Banana 2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

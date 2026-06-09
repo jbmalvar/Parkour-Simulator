@@ -1,0 +1,23 @@
+{
+    "asset": "44d8f1b0b8e36432cba5fba633849f41",
+    "fileName": "019e95f4-f382-75d9-80e4-d3e49312244c.glb",
+    "prompt": "a very sharp pointy icicle, realistic ice texture, semi-transparent blue tint, hanging hazard for a video game, cone shape",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "3db72f0e405294d31bc2d3e720d03c66",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

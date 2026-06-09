@@ -1215,7 +1215,7 @@ GameObject:
   - component: {fileID: 1757829150897133823}
   m_Layer: 7
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1339,6 +1339,9 @@ MonoBehaviour:
   cameraShake: {fileID: 4206544280517152213}
   damageOverlay: {fileID: 0}
   fadeSpeed: 1.5
+  audioSource: {fileID: 0}
+  hurtSound: {fileID: 0}
+  deathSound: {fileID: 0}
 --- !u!1 &4313577423454540093
 GameObject:
   m_ObjectHideFlags: 0

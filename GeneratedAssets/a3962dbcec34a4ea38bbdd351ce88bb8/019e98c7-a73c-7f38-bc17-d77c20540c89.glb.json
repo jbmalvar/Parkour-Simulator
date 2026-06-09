@@ -1,0 +1,23 @@
+{
+    "asset": "a3962dbcec34a4ea38bbdd351ce88bb8",
+    "fileName": "019e98c7-a73c-7f38-bc17-d77c20540c89.glb",
+    "prompt": "a sharp pointy stylized icicle, realistic ice texture with semi-transparent blue tint, hand-painted feel",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p1",
+    "modelName": "Tripo P1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "234e57debf146419b8e57dc296aae139",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

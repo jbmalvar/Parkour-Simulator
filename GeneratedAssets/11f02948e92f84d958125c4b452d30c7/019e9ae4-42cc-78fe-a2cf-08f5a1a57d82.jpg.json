@@ -1,0 +1,38 @@
+{
+    "asset": "11f02948e92f84d958125c4b452d30c7",
+    "fileName": "019e9ae4-42cc-78fe-a2cf-08f5a1a57d82.jpg",
+    "prompt": "a single small stylized fantasy wooden shack with a thick layer of snow on its roof, hand-painted texture, cyan and blue atmospheric lighting, white background, isolated game asset, matching the style of the reference image 77036",
+    "negativePrompt": "",
+    "model": "flux-2-pro",
+    "modelName": "Flux 2 (Pro)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "efccf7950f5b74a269f1dca8b381fe33",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}
