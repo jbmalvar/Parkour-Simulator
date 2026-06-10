@@ -144,20 +144,26 @@ public class PlayerAbilities : MonoBehaviour
     }
 
     private IEnumerator PerformGenjiDash()
-    {
-        float timer = 0f;
-        playerMovement.playerVelocity = Vector3.zero;
-        Vector3 dashDirection = Camera.main.transform.forward;
-
-        while (timer < dashDuration)
         {
-            controller.Move(dashDirection * dashSpeed * Time.unscaledDeltaTime);
-            timer += Time.unscaledDeltaTime; 
-            yield return null;
-        }
+            float timer = 0f;
+            playerMovement.playerVelocity = Vector3.zero;
+            Vector3 dashDirection = Camera.main.transform.forward;
 
-        playerMovement.playerVelocity = dashDirection * playerMovement.walkSpeed; 
-    }
+            while (timer < dashDuration)
+            {
+                // ---> NEW: Safety check to prevent the active controller error <---
+                if (controller == null || !controller.enabled || !gameObject.activeInHierarchy)
+                {
+                    yield break; // Instantly exits the coroutine safely
+                }
+
+                controller.Move(dashDirection * dashSpeed * Time.unscaledDeltaTime);
+                timer += Time.unscaledDeltaTime; 
+                yield return null;
+            }
+
+            playerMovement.playerVelocity = dashDirection * playerMovement.walkSpeed; 
+        }
 
     private IEnumerator PerformTimeStop()
     {
