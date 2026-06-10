@@ -1,4 +1,4 @@
-using System.Collections; // ---> ADDED: Required for Coroutines <---
+using System.Collections; 
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,22 +17,25 @@ public class GestureCaster : MonoBehaviour
     [Tooltip("Drag the object that has your camera look script here to pause it while drawing.")]
     public MonoBehaviour cameraLookScript; 
 
+    // ---> ADDED: Reference to your new fake cursor script <---
+    [Header("Virtual Mouse")]
+    public VirtualMouse virtualMouse;
+
     [Header("UI & Timers")] 
     public TMP_Text abilityTimerText; 
-    public TMP_Text warningText; // ---> ADDED: UI text for warnings like "Not Enough Mana!" <---
+    public TMP_Text warningText; 
     
     public float timeStopDuration = 7f;
     public float safeFallDuration = 10f; 
     public float lightDuration = 10f;
     public float speedBoostDuration = 6f; 
 
-    // Internal UI trackers
     private float timeStopTimer = 0f;
     private float safeFallTimer = 0f;
     private float lightTimer = 0f;
     private float speedBoostTimer = 0f; 
     
-    private Coroutine warningRoutine; // ---> ADDED: Tracks the warning message <---
+    private Coroutine warningRoutine; 
 
     [Header("Drawing Settings")]
     public float minDistanceBetweenPoints = 5f; 
@@ -41,7 +44,7 @@ public class GestureCaster : MonoBehaviour
     [Header("Audio Settings")]
     public AudioSource audioSource;
     public AudioClip failSound;
-    public AudioClip notEnoughManaSound; // ---> ADDED: Sound for when you are broke! <---
+    public AudioClip notEnoughManaSound; 
     public AudioClip timeStopSound;
     public AudioClip infiniteStaminaSound;
     public AudioClip healCrossSound;
@@ -71,7 +74,10 @@ public class GestureCaster : MonoBehaviour
         }
 
         if (abilityTimerText != null) abilityTimerText.text = "";
-        if (warningText != null) warningText.text = ""; // Ensure it's clear on start
+        if (warningText != null) warningText.text = ""; 
+
+        // ---> ADDED: Hide the virtual mouse when the game starts <---
+        if (virtualMouse != null) virtualMouse.gameObject.SetActive(false);
     }
 
     void Update()
@@ -128,15 +134,25 @@ public class GestureCaster : MonoBehaviour
     {
         screenPoints.Clear();
         lineRenderer.positionCount = 0;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        
+        // ---> UPDATED: Keep the real mouse locked and hidden <---
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        // ---> ADDED: Turn on and center the fake UI cursor <---
+        if (virtualMouse != null)
+        {
+            virtualMouse.gameObject.SetActive(true);
+            virtualMouse.CenterCursor(); 
+        }
 
         if (cameraLookScript != null) cameraLookScript.enabled = false;
     }
 
     private void UpdateDrawing()
     {
-        Vector2 mousePos = Mouse.current.position.ReadValue();
+        // ---> UPDATED: Get position from the fake cursor, NOT the real mouse <---
+        Vector2 mousePos = virtualMouse.ScreenPosition;
 
         if (screenPoints.Count == 0 || Vector2.Distance(mousePos, screenPoints[screenPoints.Count - 1]) > minDistanceBetweenPoints)
         {
@@ -151,8 +167,13 @@ public class GestureCaster : MonoBehaviour
     private void EndDrawing()
     {
         lineRenderer.positionCount = 0;
+        
+        // ---> UPDATED: Keep the real mouse locked since we are done drawing <---
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // ---> ADDED: Turn off the fake UI cursor <---
+        if (virtualMouse != null) virtualMouse.gameObject.SetActive(false);
 
         if (cameraLookScript != null) cameraLookScript.enabled = true;
 
@@ -173,8 +194,6 @@ public class GestureCaster : MonoBehaviour
         if (trainingSet.Count > 0)
         {
             Result result = PointCloudRecognizer.Classify(playerDrawing, trainingSet.ToArray());
-
-            // ---> UPDATED: All checks now handle the 'false' return state <---
 
             if (result.Score > 0.8f && result.GestureClass == "Hourglass")
             {
@@ -316,7 +335,7 @@ public class GestureCaster : MonoBehaviour
         if (warningText != null)
         {
             warningText.text = message;
-            yield return new WaitForSeconds(2f); // Will stay on screen for 2 seconds
+            yield return new WaitForSeconds(2f);
             warningText.text = "";
         }
     }
