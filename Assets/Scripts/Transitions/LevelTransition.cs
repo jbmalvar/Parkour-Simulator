@@ -7,7 +7,7 @@ public class LevelTransition : MonoBehaviour
     public string nextLevelName;
     public SpeedrunTimer levelTimer;
     public int LevelNumber;
-    public TextMeshProUGUI winText; // drag WinText here
+    public TextMeshProUGUI winText;
     private bool hasFinished = false;
 
     private void OnTriggerEnter(Collider other)
@@ -27,7 +27,7 @@ public class LevelTransition : MonoBehaviour
                 LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
             }
 
-            Invoke("LoadNextScene", 3f); // wait 3 seconds then load
+            Invoke("LoadNextScene", 0); 
         }
     }
 
@@ -36,7 +36,6 @@ public class LevelTransition : MonoBehaviour
         if (nextLevelName != "")
         {
             SceneManager.LoadScene(nextLevelName);
-            // Debug.Log("Player touched the portal! Loading level: " + nextLevelName);
         }
     }
 }
