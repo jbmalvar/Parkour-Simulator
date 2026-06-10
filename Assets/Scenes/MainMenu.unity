@@ -2121,7 +2121,8 @@ MonoBehaviour:
     Wall
     run, vault, slide, and roll through
 
-    challenging environments.'
+    challenging environments. There''s also
+    magic.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
