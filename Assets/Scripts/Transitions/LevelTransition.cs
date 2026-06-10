@@ -23,7 +23,7 @@ public class LevelTransition : MonoBehaviour
             {
                 float finalTime = levelTimer.StopTimer();
                 string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
-                print("reached");
+                // print("reached");
                 LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
             }
 

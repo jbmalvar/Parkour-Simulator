@@ -927,10 +927,10 @@ RectTransform:
   - {fileID: 548044183}
   - {fileID: 1161926905}
   - {fileID: 1254837544}
-  - {fileID: 342761235}
   - {fileID: 1607949110}
   - {fileID: 1207551375}
   - {fileID: 969392730}
+  - {fileID: 342761235}
   m_Father: {fileID: 686739}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4978,7 +4978,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fddba030656374152956b575e66348b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuButton
-  action: 0
+  action: 2
 --- !u!114 &1254837546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6220,7 +6220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fddba030656374152956b575e66348b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuButton
-  action: 4
+  action: 0
 --- !u!1 &1501548974
 GameObject:
   m_ObjectHideFlags: 0
