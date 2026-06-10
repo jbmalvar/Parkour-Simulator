@@ -1,3 +1,4 @@
+using System.Collections; // ---> ADDED: Required for Coroutines <---
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -18,16 +19,20 @@ public class GestureCaster : MonoBehaviour
 
     [Header("UI & Timers")] 
     public TMP_Text abilityTimerText; 
+    public TMP_Text warningText; // ---> ADDED: UI text for warnings like "Not Enough Mana!" <---
+    
     public float timeStopDuration = 7f;
     public float safeFallDuration = 10f; 
     public float lightDuration = 10f;
-    public float speedBoostDuration = 6f; // ---> ADDED: Match this to your PlayerAbilities setting! <---
+    public float speedBoostDuration = 6f; 
 
     // Internal UI trackers
     private float timeStopTimer = 0f;
     private float safeFallTimer = 0f;
     private float lightTimer = 0f;
-    private float speedBoostTimer = 0f; // ---> ADDED <---
+    private float speedBoostTimer = 0f; 
+    
+    private Coroutine warningRoutine; // ---> ADDED: Tracks the warning message <---
 
     [Header("Drawing Settings")]
     public float minDistanceBetweenPoints = 5f; 
@@ -36,6 +41,7 @@ public class GestureCaster : MonoBehaviour
     [Header("Audio Settings")]
     public AudioSource audioSource;
     public AudioClip failSound;
+    public AudioClip notEnoughManaSound; // ---> ADDED: Sound for when you are broke! <---
     public AudioClip timeStopSound;
     public AudioClip infiniteStaminaSound;
     public AudioClip healCrossSound;
@@ -52,8 +58,6 @@ public class GestureCaster : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("My hidden folder is: " + Application.persistentDataPath);
-        
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 0; 
         if (mainCamera == null) mainCamera = Camera.main;
@@ -67,6 +71,7 @@ public class GestureCaster : MonoBehaviour
         }
 
         if (abilityTimerText != null) abilityTimerText.text = "";
+        if (warningText != null) warningText.text = ""; // Ensure it's clear on start
     }
 
     void Update()
@@ -84,13 +89,11 @@ public class GestureCaster : MonoBehaviour
     {
         string currentText = "";
 
-        // Read the exact dynamic stamina time left from your Abilities script
         if (playerAbilities != null && playerAbilities.infiniteStaminaRemainingTime > 0)
         {
             currentText += $"Inf Stamina: {playerAbilities.infiniteStaminaRemainingTime:F1}s\n";
         }
 
-        // Standard Spectator Timers
         if (timeStopTimer > 0)
         {
             timeStopTimer -= Time.unscaledDeltaTime; 
@@ -109,7 +112,6 @@ public class GestureCaster : MonoBehaviour
             if (lightTimer > 0) currentText += $"Light: {lightTimer:F1}s\n";
         }
 
-        // ---> ADDED: UI Spectator countdown for Speed Boost <---
         if (speedBoostTimer > 0)
         {
             speedBoostTimer -= Time.unscaledDeltaTime;
@@ -172,69 +174,90 @@ public class GestureCaster : MonoBehaviour
         {
             Result result = PointCloudRecognizer.Classify(playerDrawing, trainingSet.ToArray());
 
+            // ---> UPDATED: All checks now handle the 'false' return state <---
+
             if (result.Score > 0.8f && result.GestureClass == "Hourglass")
             {
-                if (playerAbilities != null && playerAbilities.TriggerTimeStop()) 
+                if (playerAbilities != null) 
                 {
-                    timeStopTimer = timeStopDuration; 
-                    PlayCastSound(timeStopSound);
+                    if (playerAbilities.TriggerTimeStop())
+                    {
+                        timeStopTimer = timeStopDuration; 
+                        PlayCastSound(timeStopSound);
+                    }
+                    else TriggerCastFailure();
                 }
                 return; 
             }
 
             if (result.Score > 0.9f && result.GestureClass == "infinitestam")
             {
-                if (playerAbilities != null && playerAbilities.TriggerInfiniteStamina())
+                if (playerAbilities != null)
                 {
-                    PlayCastSound(infiniteStaminaSound);
+                    if (playerAbilities.TriggerInfiniteStamina()) PlayCastSound(infiniteStaminaSound);
+                    else TriggerCastFailure();
                 }
                 return;
             }
 
             if (result.Score > 0.9f && result.GestureClass == "HealCross")
             {
-                if (playerAbilities != null && playerAbilities.TriggerQuickRegen())
+                if (playerAbilities != null)
                 {
-                    PlayCastSound(healCrossSound);
+                    if (playerAbilities.TriggerQuickRegen()) PlayCastSound(healCrossSound);
+                    else TriggerCastFailure();
                 }
                 return;
             }
 
             if (result.Score > 0.9f && result.GestureClass == "regenmana")
             {
-                if (playerAbilities != null && playerAbilities.TriggerManaBurst())
+                if (playerAbilities != null)
                 {
-                    PlayCastSound(manaBurstSound);
+                    if (playerAbilities.TriggerManaBurst()) PlayCastSound(manaBurstSound);
+                    else TriggerCastFailure();
                 }
                 return;
             }
 
             if (result.Score > 0.75f && result.GestureClass == "nofall")
             {
-                if (playerAbilities != null && playerAbilities.TriggerSafeFall())
+                if (playerAbilities != null)
                 {
-                    safeFallTimer = safeFallDuration; 
-                    PlayCastSound(safeFallSound);
+                    if (playerAbilities.TriggerSafeFall())
+                    {
+                        safeFallTimer = safeFallDuration; 
+                        PlayCastSound(safeFallSound);
+                    }
+                    else TriggerCastFailure();
                 }
                 return;
             }
 
             if (result.Score > 0.9f && result.GestureClass == "speed")
             {
-                if (playerAbilities != null && playerAbilities.TriggerSpeedBoost())
+                if (playerAbilities != null)
                 {
-                    speedBoostTimer = speedBoostDuration; // ---> ADDED: Triggers UI timer <---
-                    PlayCastSound(speedBoostSound);
+                    if (playerAbilities.TriggerSpeedBoost())
+                    {
+                        speedBoostTimer = speedBoostDuration; 
+                        PlayCastSound(speedBoostSound);
+                    }
+                    else TriggerCastFailure();
                 }
                 return;
             }
 
             if (result.Score > 0.9f && result.GestureClass == "light")
             {
-                if (playerAbilities != null && playerAbilities.TriggerNightLight())
+                if (playerAbilities != null)
                 {
-                    lightTimer = lightDuration; 
-                    PlayCastSound(lightSpellSound);
+                    if (playerAbilities.TriggerNightLight())
+                    {
+                        lightTimer = lightDuration; 
+                        PlayCastSound(lightSpellSound);
+                    }
+                    else TriggerCastFailure();
                 }
                 return;
             }
@@ -256,16 +279,18 @@ public class GestureCaster : MonoBehaviour
 
         if (Mathf.Abs(swipeVector.x) > Mathf.Abs(swipeVector.y))
         {
-            if (playerAbilities != null && playerAbilities.TriggerGenjiDash()) 
+            if (playerAbilities != null)
             {
-                PlayCastSound(dashSound);
+                if (playerAbilities.TriggerGenjiDash()) PlayCastSound(dashSound);
+                else TriggerCastFailure();
             }
         }
         else
         {
-            if (playerAbilities != null && playerAbilities.TriggerSuperJump()) 
+            if (playerAbilities != null)
             {
-                PlayCastSound(jumpSound);
+                if (playerAbilities.TriggerSuperJump()) PlayCastSound(jumpSound);
+                else TriggerCastFailure();
             }
         }
     }
@@ -275,6 +300,24 @@ public class GestureCaster : MonoBehaviour
         if (audioSource != null && clip != null)
         {
             audioSource.PlayOneShot(clip);
+        }
+    }
+
+    private void TriggerCastFailure()
+    {
+        PlayCastSound(notEnoughManaSound);
+        
+        if (warningRoutine != null) StopCoroutine(warningRoutine);
+        warningRoutine = StartCoroutine(ShowWarningMessage("Not Enough Mana!"));
+    }
+
+    private IEnumerator ShowWarningMessage(string message)
+    {
+        if (warningText != null)
+        {
+            warningText.text = message;
+            yield return new WaitForSeconds(2f); // Will stay on screen for 2 seconds
+            warningText.text = "";
         }
     }
 }

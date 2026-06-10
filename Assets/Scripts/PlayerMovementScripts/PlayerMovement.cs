@@ -189,12 +189,12 @@ public class PlayerMovement : MonoBehaviour
                 
                 playerVelocity = Vector3.zero; 
             }
-            else if (fallVelocity < -12f) 
+            else if (fallVelocity < -14f) 
             {
                 // ---> NEW: Wiggle Room Math <---
-                // Subtract the "safe" fall speed (12f) from their actual fall speed.
-                // This means a fall of -13 only applies damage for the 1 extra unit of speed.
-                float excessSpeed = Mathf.Abs(fallVelocity) - 12f;
+                // Subtract the "safe" fall speed (14f) from their actual fall speed.
+                // This means a fall of -15 only applies damage for the 1 extra unit of speed.
+                float excessSpeed = Mathf.Abs(fallVelocity) - 14f;
                 int damageAmount = Mathf.RoundToInt(excessSpeed * 10f); 
                 
                 if (GetComponent<PlayerHealth>() != null)
