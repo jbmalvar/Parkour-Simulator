@@ -19,15 +19,15 @@ public class GestureCaster : MonoBehaviour
     [Header("UI & Timers")] 
     public TMP_Text abilityTimerText; 
     public float timeStopDuration = 7f;
-    // ---> REMOVED: infiniteStaminaDuration (we get this from PlayerAbilities now) <---
-    public float safeFallDuration = 10f; // Note: You might want to make these match the durations in PlayerAbilities!
+    public float safeFallDuration = 10f; 
     public float lightDuration = 10f;
+    public float speedBoostDuration = 6f; // ---> ADDED: Match this to your PlayerAbilities setting! <---
 
     // Internal UI trackers
     private float timeStopTimer = 0f;
-    // ---> REMOVED: infiniteStaminaTimer <---
     private float safeFallTimer = 0f;
     private float lightTimer = 0f;
+    private float speedBoostTimer = 0f; // ---> ADDED <---
 
     [Header("Drawing Settings")]
     public float minDistanceBetweenPoints = 5f; 
@@ -84,14 +84,13 @@ public class GestureCaster : MonoBehaviour
     {
         string currentText = "";
 
-        // ---> UPDATED: Just reads the exact time left from your Abilities script! <---
+        // Read the exact dynamic stamina time left from your Abilities script
         if (playerAbilities != null && playerAbilities.infiniteStaminaRemainingTime > 0)
         {
             currentText += $"Inf Stamina: {playerAbilities.infiniteStaminaRemainingTime:F1}s\n";
         }
 
-        // ---> UPDATED: The following timers now ONLY update the UI. 
-        // They no longer try to force the abilities to end, saving your Coroutines! <---
+        // Standard Spectator Timers
         if (timeStopTimer > 0)
         {
             timeStopTimer -= Time.unscaledDeltaTime; 
@@ -108,6 +107,13 @@ public class GestureCaster : MonoBehaviour
         {
             lightTimer -= Time.unscaledDeltaTime; 
             if (lightTimer > 0) currentText += $"Light: {lightTimer:F1}s\n";
+        }
+
+        // ---> ADDED: UI Spectator countdown for Speed Boost <---
+        if (speedBoostTimer > 0)
+        {
+            speedBoostTimer -= Time.unscaledDeltaTime;
+            if (speedBoostTimer > 0) currentText += $"Speed Boost: {speedBoostTimer:F1}s\n";
         }
 
         if (abilityTimerText != null)
@@ -180,7 +186,6 @@ public class GestureCaster : MonoBehaviour
             {
                 if (playerAbilities != null && playerAbilities.TriggerInfiniteStamina())
                 {
-                    // ---> UPDATED: We no longer set a timer here. PlayerAbilities handles it natively! <---
                     PlayCastSound(infiniteStaminaSound);
                 }
                 return;
@@ -218,6 +223,7 @@ public class GestureCaster : MonoBehaviour
             {
                 if (playerAbilities != null && playerAbilities.TriggerSpeedBoost())
                 {
+                    speedBoostTimer = speedBoostDuration; // ---> ADDED: Triggers UI timer <---
                     PlayCastSound(speedBoostSound);
                 }
                 return;
