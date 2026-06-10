@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7722947268986998879}
   - component: {fileID: 6666083958897516538}
   - component: {fileID: 8891872868033686320}
-  - component: {fileID: -3554817907775935054}
   - component: {fileID: 6894593835206406864}
   m_Layer: 0
   m_Name: Button
@@ -93,27 +92,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &-3554817907775935054
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 3277538723355547243, guid: cc827add6f72f48d5a74384332616d49, type: 3}
-  m_PrefabInstance: {fileID: 7829458349433714612}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6946445303280782053}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: 0, y: 0.044999998, z: -0.000000044703484}
 --- !u!114 &6894593835206406864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,6 +106,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ButtonInteract
   door: {fileID: 0}
   interactDistance: 3
+  openSound: {fileID: 0}
+  closeSound: {fileID: 0}
 --- !u!1 &9128544892808466051
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,7 +250,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Button
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
