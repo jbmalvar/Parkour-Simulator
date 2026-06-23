@@ -41,7 +41,7 @@ public class MenuButton : MonoBehaviour
             case Action.Back:          m.GoBack();             break;
             case Action.StartLevel:    m.ConfirmStartLevel();  break;
             case Action.CancelConfirm: m.CancelLevelConfirm(); break;
-            case Action.Leaderboard:   m.ShowLeaderboard();    break;
+            // case Action.Leaderboard:   m.ShowLeaderboard();    break;
         }
     }
 }

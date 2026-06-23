@@ -19,13 +19,13 @@ public class LevelTransition : MonoBehaviour
             {
                 winText.gameObject.SetActive(true);
             }
-            if (LevelNumber > 0)
-            {
-                float finalTime = levelTimer.StopTimer();
-                string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
-                // print("reached");
-                LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
-            }
+            // if (LevelNumber > 0)
+            // {
+            //     float finalTime = levelTimer.StopTimer();
+            //     string player = PlayerPrefs.GetString(UsernameManager.SavedNamePrefKey, "Anonymous");
+            //     // print("reached");
+            //     LeaderboardManager.Instance.SubmitScore(LevelNumber, player, finalTime);
+            // }
 
             Invoke("LoadNextScene", 0); 
         }
@@ -38,4 +38,4 @@ public class LevelTransition : MonoBehaviour
             SceneManager.LoadScene(nextLevelName);
         }
     }
-}
+} 
